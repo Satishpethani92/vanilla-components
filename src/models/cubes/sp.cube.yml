@@ -1,0 +1,135 @@
+cubes:
+  - name: strategy_plan
+    title: Strategy Plans
+    data_source: my-db
+    sql_table: csdb.strategy_plan
+
+    dimensions:
+      - name: stp_id
+        sql: stp_id
+        type: number
+        primary_key: true
+        title: 'Strategy Plan ID'
+
+      - name: org_id
+        sql: org_id
+        type: number
+        title: 'Organization ID'
+
+      - name: usr_id
+        sql: usr_id
+        type: number
+        title: 'User ID'
+
+      - name: plan_name
+        sql: plan_name
+        type: string
+        title: 'Plan Name'
+
+      - name: description
+        sql: description
+        type: string
+        title: 'Description'
+
+      - name: parent_stp_id
+        sql: parent_stp_id
+        type: number
+        title: 'Parent Strategy Plan ID'
+
+      - name: plan_type
+        sql: plan_type
+        type: number
+        title: 'Plan Type'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: stp_code
+        sql: stp_code
+        type: string
+        title: 'Strategy Plan Code'
+
+      - name: state
+        sql: state
+        type: string
+        title: 'State'
+
+      - name: alignment_type
+        sql: alignment_type
+        type: string
+        title: 'Alignment Type'
+
+      - name: stakeholder_type
+        sql: stakeholder_type
+        type: string
+        title: 'Stakeholder Type'
+
+      - name: user_full_name
+        sql: (SELECT CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name)
+          FROM csdb.user u
+          WHERE u.usr_id = {CUBE}.usr_id)
+        type: string
+        title: 'User Full Name'
+
+    measures:
+      - name: total_target_score
+        sql: target_score
+        type: sum
+        title: 'Total Target Score'
+
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+      - name: count
+        type: count
+        title: '# of Strategy Plans'
+
+    joins:
+      - name: user
+        sql: '{CUBE}.usr_id = {user}.usr_id'
+        relationship: many_to_one
+
+    pre_aggregations:
+      - name: strategy_plan_rollup
+        type: rollup
+        measureReferences:
+          - count
+        dimensionReferences:
+          - org_id
+          - user_full_name
+        timeDimensionReference: create_time
+        granularity: day

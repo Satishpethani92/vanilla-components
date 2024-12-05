@@ -1,0 +1,103 @@
+cubes:
+  - name: user
+    title: Users
+    data_source: my-db
+    sql_table: csdb.user
+
+    dimensions:
+      - name: usr_id
+        sql: usr_id
+        type: number
+        primary_key: true
+        title: 'User ID'
+
+      - name: org_id
+        sql: org_id
+        type: number
+        title: 'Organization ID'
+
+      - name: user_name
+        sql: user_name
+        type: string
+        title: 'User Name'
+
+      - name: first_name
+        sql: first_name
+        type: string
+        title: 'First Name'
+
+      - name: middle_name
+        sql: middle_name
+        type: string
+        title: 'Middle Name'
+
+      - name: last_name
+        sql: last_name
+        type: string
+        title: 'Last Name'
+
+      - name: email
+        sql: email
+        type: string
+        title: 'Email Address'
+
+      - name: phone
+        sql: phone
+        type: string
+        title: 'Phone Number'
+
+      - name: designation
+        sql: designation
+        type: string
+        title: 'Designation'
+
+      - name: user_photo_url
+        sql: user_photo_url
+        type: string
+        title: 'User Photo URL'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: remarks
+        sql: remarks
+        type: string
+        title: 'Remarks'
+
+      - name: read_only
+        sql: read_only
+        type: boolean
+        title: 'Read Only Access'
+
+      - name: full_name
+        sql: CONCAT({CUBE}.first_name, ' ', COALESCE({CUBE}.middle_name, ''), ' ', {CUBE}.last_name)
+        type: string
+        title: 'Full Name'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Users'
+
+    pre_aggregations:
+      - name: user_rollup
+        type: rollup
+        measureReferences:
+          - count
+        dimensionReferences:
+          - org_id
+          - status
+        timeDimensionReference: create_time
+        granularity: day
