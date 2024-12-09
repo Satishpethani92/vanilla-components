@@ -1,0 +1,236 @@
+cubes:
+  - name: driver
+    title: Drivers
+    data_source: my-db
+    sql_table: csdb.drivers
+
+    dimensions:
+      - name: dri_id
+        sql: dri_id
+        type: number
+        primary_key: true
+        title: 'Driver ID'
+
+      - name: org_id
+        sql: org_id
+        type: number
+        title: 'Organization ID'
+
+      - name: ogs_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Group Segment ID'
+
+      - name: usr_id
+        sql: usr_id
+        type: number
+        title: 'User ID'
+
+      - name: driver_title
+        sql: driver_title
+        type: string
+        title: 'Driver Title'
+
+      - name: description
+        sql: description
+        type: string
+        title: 'Description'
+
+      - name: source
+        sql: source
+        type: number
+        title: 'Source'
+
+      - name: driver_term
+        sql: driver_term
+        type: number
+        title: 'Driver Term'
+
+      - name: driver_impact
+        sql: driver_impact
+        type: number
+        title: 'Driver Impact'
+
+      - name: driver_swot
+        sql: driver_swot
+        type: number
+        title: 'Driver SWOT'
+
+      - name: fin_term_from
+        sql: fin_term_from
+        type: time
+        title: 'Financial Term From'
+
+      - name: fin_term_to
+        sql: fin_term_to
+        type: time
+        title: 'Financial Term To'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: status
+        sql: status
+        type: string
+        title: 'Status'
+
+      - name: priority
+        sql: priority
+        type: number
+        title: 'Priority ID'
+
+      - name: priority_name
+        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
+        type: string
+        title: 'Priority Name'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: strategic_theme
+        sql: strategic_theme
+        type: number
+        title: 'Strategic Theme ID'
+
+      - name: strategic_theme_name
+        sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_theme)
+        type: string
+        title: 'Strategic Theme Name'
+
+      - name: parent_driver_id
+        sql: parent_driver_id
+        type: number
+        title: 'Parent Driver ID'
+
+      - name: parent_driver_title
+        sql: (SELECT driver_title FROM csdb.drivers WHERE dri_id = {CUBE}.parent_driver_id)
+        type: string
+        title: 'Parent Driver Title'
+
+      - name: external_factor
+        sql: external_factor
+        type: string
+        title: 'External Factor'
+
+      - name: promote_dri
+        sql: pramote_dri
+        type: string
+        title: 'Promote Driver'
+
+      - name: file_attachment
+        sql: file_attachment
+        type: string
+        title: 'File Attachment'
+
+      - name: stakeholder
+        sql: stakeholder
+        type: string
+        title: 'Stakeholder'
+
+      - name: stakeholder_usr_id
+        sql: stakeholder_usr_id
+        type: number
+        title: 'Stakeholder User ID'
+
+      - name: stakeholder_org_id
+        sql: stakeholder_org_id
+        type: number
+        title: 'Stakeholder Organization ID'
+
+      - name: ext_stakeholder_usr_name
+        sql: ext_stakeholder_usr_name
+        type: string
+        title: 'External Stakeholder User Name'
+
+      - name: ext_stakeholder_usr_email
+        sql: ext_stakeholder_usr_email
+        type: string
+        title: 'External Stakeholder User Email'
+
+      - name: ext_stakeholder_org_name
+        sql: ext_stakeholder_org_name
+        type: string
+        title: 'External Stakeholder Organization Name'
+
+      - name: ext_stakeholder_org_email
+        sql: ext_stakeholder_org_email
+        type: string
+        title: 'External Stakeholder Organization Email'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: dri_code
+        sql: dri_code
+        type: string
+        title: 'Driver Code'
+
+      - name: driver_type
+        sql: driver_type
+        type: string
+        title: 'Driver Type'
+
+      - name: user_name
+        sql: (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+          FROM csdb.user u
+          WHERE u.usr_id = {CUBE}.usr_id)
+        type: string
+        title: 'User Name'
+
+      - name: organization_name
+        sql: (SELECT org_name FROM csdb.organization WHERE org_id = {CUBE}.org_id)
+        type: string
+        title: 'Organization Name'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Drivers'
+
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+    pre_aggregations:
+      - name: driver_rollup
+        type: rollup
+        sqlAlias: driver_rollup
+        measureReferences:
+          - count
+          - total_expected_score
+          - total_actual_score
+        dimensionReferences:
+          - driver_title
+          - status
+          - priority_name
+          - strategic_theme_name
+          - organization_name
+        timeDimensionReference: create_time
+        granularity: day

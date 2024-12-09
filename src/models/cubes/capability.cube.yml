@@ -1,0 +1,141 @@
+cubes:
+  - name: capability
+    title: Capabilities
+    data_source: my-db
+    sql_table: csdb.capabilities
+
+    dimensions:
+      - name: cap_id
+        sql: cap_id
+        type: number
+        primary_key: true
+        title: 'Capability ID'
+
+      - name: org_id
+        sql: org_id
+        type: number
+        title: 'Organization ID'
+
+      - name: name
+        sql: name
+        type: string
+        title: 'Capability Name'
+
+      - name: description
+        sql: description
+        type: string
+        title: 'Description'
+
+      - name: is_existing_expected
+        sql: is_existing_expected
+        type: string
+        title: 'Is Existing Expected'
+
+      - name: capability_area
+        sql: capability_area
+        type: string
+        title: 'Capability Area'
+
+      - name: capability_area_value
+        sql: capability_area_value
+        type: string
+        title: 'Capability Area Value'
+
+      - name: ogs_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Group Segment ID'
+
+      - name: parent_capability_id
+        sql: parent_capability_id
+        type: number
+        title: 'Parent Capability ID'
+
+      - name: capability_level
+        sql: capability_level
+        type: number
+        title: 'Capability Level'
+
+      - name: interest_level
+        sql: interest_level
+        type: number
+        title: 'Interest Level'
+
+      - name: capability_segment
+        sql: capability_segment
+        type: string
+        title: 'Capability Segment'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: status_name
+        sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: (SELECT font_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: (SELECT background_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Background Color'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: cap_code
+        sql: cap_code
+        type: string
+        title: 'Capability Code'
+
+      - name: parent_capability_name
+        sql: (SELECT name FROM csdb.capabilities WHERE cap_id = {CUBE}.parent_capability_id)
+        type: string
+        title: 'Parent Capability Name'
+
+      - name: organization_name
+        sql: (SELECT org_name FROM csdb.organization WHERE org_id = {CUBE}.org_id)
+        type: string
+        title: 'Organization Name'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Capabilities'
+
+    pre_aggregations:
+      - name: capability_rollup
+        type: rollup
+        sqlAlias: capability_rollup
+        measureReferences:
+          - count
+        dimensionReferences:
+          - name
+          - capability_area
+          - status_name
+          - organization_name
+        timeDimensionReference: create_time
+        granularity: day

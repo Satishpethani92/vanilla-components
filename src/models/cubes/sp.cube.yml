@@ -39,12 +39,32 @@ cubes:
       - name: plan_type
         sql: plan_type
         type: number
-        title: 'Plan Type'
+        title: 'Plan Type ID'
+
+      - name: plan_type_name
+        sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.plan_type)
+        type: string
+        title: 'Plan Type Name'
 
       - name: status
         sql: status
         type: number
-        title: 'Status'
+        title: 'Status ID'
+
+      - name: status_name
+        sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: (SELECT font_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: (SELECT background_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Background Color'
 
       - name: active_status
         sql: active_status
@@ -92,11 +112,41 @@ cubes:
         title: 'Stakeholder Type'
 
       - name: user_full_name
-        sql: (SELECT CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name)
+        sql: (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
           FROM csdb.user u
           WHERE u.usr_id = {CUBE}.usr_id)
         type: string
         title: 'User Full Name'
+
+      - name: user_photo_url
+        sql: (SELECT user_photo_url FROM csdb.user WHERE usr_id = {CUBE}.usr_id)
+        type: string
+        title: 'User Photo URL'
+
+      - name: parent_plan_name
+        sql: (SELECT plan_name FROM csdb.strategy_plan WHERE stp_id = {CUBE}.parent_stp_id)
+        type: string
+        title: 'Parent Plan Name'
+
+      - name: parent_state
+        sql: (SELECT state FROM csdb.strategy_plan WHERE stp_id = {CUBE}.parent_stp_id)
+        type: string
+        title: 'Parent Plan State'
+
+      - name: org_name
+        sql: (SELECT org_name FROM csdb.organization WHERE org_id = {CUBE}.org_id)
+        type: string
+        title: 'Organization Name'
+
+      - name: draft_step
+        sql: (SELECT step FROM csdb.draft_record_step WHERE obj_id = {CUBE}.stp_id AND obj_type = "STRATEGYPLAN")
+        type: string
+        title: 'Draft Step'
+
+      - name: is_draft
+        sql: (SELECT is_draft FROM csdb.draft_record_step WHERE obj_id = {CUBE}.stp_id AND obj_type = "STRATEGYPLAN")
+        type: boolean
+        title: 'Is Draft'
 
     measures:
       - name: total_target_score
@@ -126,10 +176,14 @@ cubes:
     pre_aggregations:
       - name: strategy_plan_rollup
         type: rollup
+        sqlAlias: strategy_plan_rollup
         measureReferences:
           - count
         dimensionReferences:
           - org_id
           - user_full_name
+          - plan_type_name
+          - status_name
+          - org_name
         timeDimensionReference: create_time
         granularity: day

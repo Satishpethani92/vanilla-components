@@ -1,0 +1,128 @@
+cubes:
+  - name: project
+    title: Strategic Initiatives
+    data_source: my-db
+    sql: SELECT * FROM csdb.objectives WHERE otype = 'strategic-initiative'
+
+    dimensions:
+      - name: obj_id
+        sql: obj_id
+        type: number
+        primary_key: true
+        title: 'Project ID'
+
+      - name: gol_id
+        sql: gol_id
+        type: number
+        title: 'Goal ID'
+
+      - name: org_id
+        sql: org_id
+        type: number
+        title: 'Organization ID'
+
+      - name: usr_id
+        sql: usr_id
+        type: number
+        title: 'User ID'
+
+      - name: obj_name
+        sql: obj_name
+        type: string
+        title: 'Project Name'
+
+      - name: obj_description
+        sql: obj_description
+        type: string
+        title: 'Project Description'
+
+      - name: from_date
+        sql: from_date
+        type: time
+        title: 'Start Date'
+
+      - name: to_date
+        sql: to_date
+        type: time
+        title: 'End Date'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: status_name
+        sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: (SELECT font_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: (SELECT background_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
+        type: string
+        title: 'Status Background Color'
+
+      - name: priority
+        sql: priority
+        type: number
+        title: 'Priority ID'
+
+      - name: priority_name
+        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
+        type: string
+        title: 'Priority Name'
+
+      - name: priority_icon
+        sql: (SELECT icon_name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
+        type: string
+        title: 'Priority Icon'
+
+      - name: priority_weight
+        sql: (SELECT weight FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
+        type: number
+        title: 'Priority Weight'
+
+      - name: strategic_initiative_name
+        sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_initiative)
+        type: string
+        title: 'Strategic Initiative Name'
+
+      - name: draft_step
+        sql: (SELECT step FROM csdb.draft_record_step WHERE obj_id = {CUBE}.obj_id AND obj_type = 'PROJECT')
+        type: string
+        title: 'Draft Step'
+
+      - name: is_draft
+        sql: (SELECT is_draft FROM csdb.draft_record_step WHERE obj_id = {CUBE}.obj_id AND obj_type = 'PROJECT')
+        type: boolean
+        title: 'Is Draft'
+
+      - name: user_name
+        sql: (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+          FROM csdb.user u
+          WHERE u.usr_id = {CUBE}.usr_id)
+        type: string
+        title: 'User Name'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Projects'
+
+    pre_aggregations:
+      - name: project_rollup
+        type: rollup
+        sqlAlias: project_rollup
+        measureReferences:
+          - count
+        dimensionReferences:
+          - obj_name
+          - status_name
+          - priority_name
+          - strategic_initiative_name
+        timeDimensionReference: create_time
+        granularity: day
