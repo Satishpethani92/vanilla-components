@@ -2,7 +2,19 @@ cubes:
   - name: goals
     title: Goals
     data_source: my-db
-    sql_table: csdb.goals
+    sql: >
+      SELECT *
+      FROM csdb.goals
+      WHERE (
+        org_id = { COMPILE_CONTEXT.securityContext.org_id }
+        AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+        ) OR gol_id IN (
+             SELECT ro.obj_id
+              FROM csdb.user_role_access ura
+                JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                  AND ro.obj_type = 'GOAL'
+          )
 
     dimensions:
       - name: gol_id

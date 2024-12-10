@@ -2,7 +2,22 @@ cubes:
   - name: okr
     title: OKR Objectives
     data_source: my-db
-    sql: SELECT * FROM csdb.objectives WHERE otype = 'objective'
+    sql: >
+      SELECT * 
+      FROM csdb.objectives 
+      WHERE otype = 'objective'
+        AND (
+          (
+            org_id = { COMPILE_CONTEXT.securityContext.org_id }
+            AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj_id IN (
+                SELECT ro.obj_id
+                FROM csdb.user_role_access ura
+                  JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                  WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                    AND ro.obj_type = 'OKR'
+          )
+        )
 
     dimensions:
       - name: obj_id

@@ -1,9 +1,14 @@
-- name: Example customer 1
+- name: Pulkit Kapila
   securityContext:
-    country: United States
-  environment: default
+    usr_id: 882
+    org_id: 287
 
-- name: Example customer 2
+- name: Satish Pethani
   securityContext:
-    country: Germany
-  environment: default
+    usr_id: 1399
+    org_id: 618
+
+- name: Satish Pethani 2
+  securityContext:
+    usr_id: 1422
+    org_id: 565

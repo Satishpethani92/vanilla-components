@@ -2,7 +2,19 @@ cubes:
   - name: driver
     title: Drivers
     data_source: my-db
-    sql_table: csdb.drivers
+    sql: >
+      SELECT *
+      FROM csdb.drivers
+      WHERE (
+        org_id = { COMPILE_CONTEXT.securityContext.org_id }
+        AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+        ) OR dri_id IN (
+              SELECT ro.obj_id
+              FROM csdb.user_role_access ura
+                JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                  AND ro.obj_type = 'DRIVER'
+          )
 
     dimensions:
       - name: dri_id

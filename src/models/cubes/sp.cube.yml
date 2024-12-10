@@ -2,7 +2,19 @@ cubes:
   - name: strategy_plan
     title: Strategy Plans
     data_source: my-db
-    sql_table: csdb.strategy_plan
+    sql: >
+      SELECT *
+      FROM csdb.strategy_plan
+      WHERE (
+        org_id = { COMPILE_CONTEXT.securityContext.org_id }
+        AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+        ) OR stp_id IN (
+              SELECT ro.obj_id
+              FROM csdb.user_role_access ura
+                JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                  AND ro.obj_type = 'STRATEGYPLAN'
+          )
 
     dimensions:
       - name: stp_id
