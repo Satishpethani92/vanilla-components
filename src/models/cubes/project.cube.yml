@@ -1,5 +1,6 @@
 cubes:
   - name: project
+    sql_alias: pro
     title: Strategic Initiatives
     data_source: my-db
     sql: >

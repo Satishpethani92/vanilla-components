@@ -1,5 +1,6 @@
 cubes:
   - name: strategy_plan
+    sql_alias: sp
     title: Strategy Plans
     data_source: my-db
     sql: >

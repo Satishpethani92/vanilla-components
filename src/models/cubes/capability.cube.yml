@@ -1,6 +1,7 @@
 cubes:
   - name: capability
     title: Capabilities
+    sql_alias: cap
     data_source: my-db
     sql: >
       SELECT *

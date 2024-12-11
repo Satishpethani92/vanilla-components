@@ -1,6 +1,7 @@
 cubes:
   - name: driver
     title: Drivers
+    sql_alias: dri
     data_source: my-db
     sql: >
       SELECT *

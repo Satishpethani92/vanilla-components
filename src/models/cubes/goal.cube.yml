@@ -1,6 +1,7 @@
 cubes:
   - name: goals
     title: Goals
+    sql_alias: g
     data_source: my-db
     sql: >
       SELECT *
@@ -281,9 +282,9 @@ cubes:
         title: '# of Goals'
 
     pre_aggregations:
-      - name: goals_rollup
+      - name: r
         type: rollup
-        sqlAlias: goals_rollup
+        sql_alias: r
         measureReferences:
           - count
         dimensionReferences:
