@@ -94,11 +94,6 @@ cubes:
         type: number
         title: 'Priority ID'
 
-      - name: priority_name
-        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
-        type: string
-        title: 'Priority Name'
-
       - name: actual_score
         sql: actual_score
         type: number
@@ -109,20 +104,10 @@ cubes:
         type: number
         title: 'Strategic Theme ID'
 
-      - name: strategic_theme_name
-        sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_theme)
-        type: string
-        title: 'Strategic Theme Name'
-
       - name: parent_driver_id
         sql: parent_driver_id
         type: number
         title: 'Parent Driver ID'
-
-      - name: parent_driver_title
-        sql: (SELECT driver_title FROM csdb.drivers WHERE dri_id = {CUBE}.parent_driver_id)
-        type: string
-        title: 'Parent Driver Title'
 
       - name: external_factor
         sql: external_factor
@@ -204,17 +189,33 @@ cubes:
         type: string
         title: 'Driver Type'
 
-      - name: user_name
-        sql: (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
-          FROM csdb.user u
-          WHERE u.usr_id = {CUBE}.usr_id)
+      - name: parent_driver_title
+        sql: (SELECT driver_title FROM csdb.drivers WHERE dri_id = {CUBE}.parent_driver_id)
         type: string
-        title: 'User Name'
+        title: 'Parent Driver Title'
 
       - name: organization_name
         sql: (SELECT org_name FROM csdb.organization WHERE org_id = {CUBE}.org_id)
         type: string
         title: 'Organization Name'
+
+      - name: strategic_theme_name
+        sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_theme)
+        type: string
+        title: 'Strategic Theme Name'
+
+      - name: priority_name
+        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
+        type: string
+        title: 'Priority Name'
+
+      - name: user_name
+        sql: >
+          (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+            FROM csdb.user u
+            WHERE u.usr_id = {CUBE}.usr_id)
+        type: string
+        title: 'User Name'
 
     measures:
       - name: count
@@ -230,20 +231,3 @@ cubes:
         sql: actual_score
         type: sum
         title: 'Total Actual Score'
-
-    pre_aggregations:
-      - name: driver_rollup
-        type: rollup
-        sqlAlias: driver_rollup
-        measureReferences:
-          - count
-          - total_expected_score
-          - total_actual_score
-        dimensionReferences:
-          - driver_title
-          - status
-          - priority_name
-          - strategic_theme_name
-          - organization_name
-        timeDimensionReference: create_time
-        granularity: day

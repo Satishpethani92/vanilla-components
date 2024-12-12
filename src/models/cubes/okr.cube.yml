@@ -66,6 +66,11 @@ cubes:
         type: number
         title: 'Status ID'
 
+      - name: priority
+        sql: priority
+        type: number
+        title: 'Priority ID'
+
       - name: status_name
         sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
         type: string
@@ -80,11 +85,6 @@ cubes:
         sql: (SELECT background_color FROM csdb.master_table WHERE msr_id = {CUBE}.status)
         type: string
         title: 'Status Background Color'
-
-      - name: priority
-        sql: priority
-        type: number
-        title: 'Priority ID'
 
       - name: priority_name
         sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.priority)
@@ -117,9 +117,10 @@ cubes:
         title: 'Is Draft'
 
       - name: user_name
-        sql: (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
-          FROM csdb.user u
-          WHERE u.usr_id = {CUBE}.usr_id)
+        sql: >
+          (SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+            FROM csdb.user u
+            WHERE u.usr_id = {CUBE}.usr_id)
         type: string
         title: 'User Name'
 
@@ -127,17 +128,3 @@ cubes:
       - name: count
         type: count
         title: '# of OKR Objectives'
-
-    pre_aggregations:
-      - name: okr_rollup
-        type: rollup
-        sqlAlias: okr_rollup
-        measureReferences:
-          - count
-        dimensionReferences:
-          - obj_name
-          - status_name
-          - priority_name
-          - strategic_initiative_name
-        timeDimensionReference: create_time
-        granularity: day
