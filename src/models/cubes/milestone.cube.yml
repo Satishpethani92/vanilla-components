@@ -1,0 +1,159 @@
+cubes:
+  - name: objective_milestones
+    title: 'Milestones'
+    sql_alias: om
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.objective_milestones
+
+    dimensions:
+      - name: obm_id
+        sql: obm_id
+        type: number
+        primary_key: true
+        title: 'Objective Milestone ID'
+
+      - name: obj_id
+        sql: obj_id
+        type: number
+        title: 'Objective ID'
+
+      - name: milestone_name
+        sql: milestone_name
+        type: string
+        title: 'Milestone Name'
+
+      - name: milestone_icon
+        sql: milestone_icon
+        type: string
+        title: 'Milestone Icon'
+
+      - name: start_date
+        sql: start_date
+        type: time
+        title: 'Start Date'
+
+      - name: end_date
+        sql: end_date
+        type: time
+        title: 'End Date'
+
+      - name: assigned_to
+        sql: assigned_to
+        type: number
+        title: 'Assigned To User ID'
+
+      - name: score
+        sql: score
+        type: number
+        title: 'Score'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: status
+        sql: status
+        type: string
+        title: 'Status'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: track_milestone
+        sql: track_milestone
+        type: boolean
+        title: 'Track Milestone'
+
+      - name: comments
+        sql: comments
+        type: string
+        title: 'Comments'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: weightage
+        sql: weightage
+        type: number
+        title: 'Weightage'
+
+      - name: actual_cost
+        sql: actual_cost
+        type: number
+        title: 'Actual Cost'
+
+      # Example of a derived dimension
+      - name: status_name
+        sql: >
+          (SELECT name 
+           FROM csdb.status_master 
+           WHERE msr_id = om.status)
+        type: string
+        title: 'Status Name'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Milestones'
+
+      - name: total_score
+        type: sum
+        sql: score
+        title: 'Total Score'
+
+      - name: average_score
+        type: avg
+        sql: score
+        title: 'Average Score'
+
+      - name: total_expected_score
+        type: sum
+        sql: expected_score
+        title: 'Total Expected Score'
+
+      - name: average_expected_score
+        type: avg
+        sql: expected_score
+        title: 'Average Expected Score'
+
+      - name: total_weightage
+        type: sum
+        sql: weightage
+        title: 'Total Weightage'
+
+      - name: average_weightage
+        type: avg
+        sql: weightage
+        title: 'Average Weightage'
+
+      - name: total_actual_cost
+        type: sum
+        sql: actual_cost
+        title: 'Total Actual Cost'
+
+      - name: average_actual_cost
+        type: avg
+        sql: actual_cost
+        title: 'Average Actual Cost'

@@ -178,6 +178,6 @@ cubes:
         title: '# of Strategy Plans'
 
     joins:
-      - name: user
-        sql: '{CUBE}.usr_id = {user}.usr_id'
-        relationship: many_to_one
+      - name: goals
+        sql: '{CUBE}.stp_id = {goals}.stp_id'
+        relationship: one_to_many

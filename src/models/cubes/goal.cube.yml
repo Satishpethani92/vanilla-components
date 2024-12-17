@@ -301,3 +301,11 @@ cubes:
       - name: count
         type: count
         title: '# of Goals'
+
+    joins:
+      - name: okr
+        sql: '{CUBE}.gol_id = {okr}.gol_id'
+        relationship: one_to_many
+      - name: project
+        sql: '{CUBE}.gol_id = {project}.gol_id'
+        relationship: one_to_many

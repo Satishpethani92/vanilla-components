@@ -129,3 +129,8 @@ cubes:
       - name: count
         type: count
         title: '# of Projects'
+
+    joins:
+      - name: objective_milestones
+        sql: '{CUBE}.obj_id = {objective_milestones}.obj_id'
+        relationship: one_to_many

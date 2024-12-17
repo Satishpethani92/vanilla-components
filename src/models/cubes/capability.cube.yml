@@ -109,6 +109,11 @@ cubes:
         type: string
         title: 'Capability Code'
 
+      - name: capability_level_name
+        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.interest_level)
+        type: string
+        title: 'Maturity Level'
+
       - name: status_name
         sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
         type: string
