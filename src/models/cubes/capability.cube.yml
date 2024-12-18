@@ -114,6 +114,11 @@ cubes:
         type: string
         title: 'Maturity Level'
 
+      - name: capability_area_name
+        sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.capability_area)
+        type: string
+        title: 'Capability Area Name'
+
       - name: status_name
         sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.status)
         type: string

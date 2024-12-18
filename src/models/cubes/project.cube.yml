@@ -102,10 +102,10 @@ cubes:
         type: number
         title: 'Priority Weight'
 
-      - name: strategic_initiative_name
+      - name: strategic_theme_name
         sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_initiative)
         type: string
-        title: 'Strategic Initiative Name'
+        title: 'Strategic Theme Name'
 
       - name: draft_step
         sql: (SELECT step FROM csdb.draft_record_step WHERE obj_id = {CUBE}.obj_id AND obj_type = 'PROJECT')
@@ -134,11 +134,3 @@ cubes:
       - name: objective_milestones
         sql: '{CUBE}.obj_id = {objective_milestones}.obj_id'
         relationship: one_to_many
-
-      - name: goals
-        sql: '{CUBE}.gol_id = {goals}.gol_id'
-        relationship: many_to_one
-
-      - name: strategy_theme
-        sql: '{goals}.stt_id = {strategy_theme}.stt_id'
-        relationship: many_to_one

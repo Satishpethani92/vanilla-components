@@ -101,10 +101,10 @@ cubes:
         type: number
         title: 'Priority Weight'
 
-      - name: strategic_initiative_name
+      - name: strategic_theme_name
         sql: (SELECT name FROM csdb.strategic_themes WHERE stt_id = {CUBE}.strategic_initiative)
         type: string
-        title: 'Strategic Initiative Name'
+        title: 'Strategic Theme Name'
 
       - name: draft_step
         sql: (SELECT step FROM csdb.draft_record_step WHERE obj_id = {CUBE}.obj_id AND obj_type = 'OKR')
