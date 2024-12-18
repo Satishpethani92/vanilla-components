@@ -134,3 +134,11 @@ cubes:
       - name: objective_milestones
         sql: '{CUBE}.obj_id = {objective_milestones}.obj_id'
         relationship: one_to_many
+
+      - name: goals
+        sql: '{CUBE}.gol_id = {goals}.gol_id'
+        relationship: many_to_one
+
+      - name: strategy_theme
+        sql: '{goals}.stt_id = {strategy_theme}.stt_id'
+        relationship: many_to_one

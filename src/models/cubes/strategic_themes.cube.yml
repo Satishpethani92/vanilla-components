@@ -1,0 +1,30 @@
+cubes:
+  - name: strategy_theme
+    sql_alias: stt
+    title: Strategy Themes
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.strategic_themes
+
+    dimensions:
+      - name: stt_id
+        sql: stt_id
+        type: number
+        primary_key: true
+        title: 'Strategy Theme ID'
+
+      - name: name
+        sql: name
+        type: string
+        title: 'Strategy Theme Name'
+
+      - name: description
+        sql: description
+        type: string
+        title: 'Description'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Strategy Themes'
