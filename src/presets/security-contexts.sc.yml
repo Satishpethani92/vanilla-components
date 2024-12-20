@@ -22,3 +22,7 @@
   securityContext:
     usr_id: 1594
     org_id: 727
+
+- name: testscore
+  securityContext:
+    obj_id: 2708

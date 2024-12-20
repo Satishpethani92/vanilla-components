@@ -1,0 +1,90 @@
+cubes:
+  - name: key_results
+    title: Key Results
+    sql_alias: kr
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.key_results
+
+    dimensions:
+      - name: krs_id
+        sql: krs_id
+        type: number
+        primary_key: true
+        title: 'Key Result ID'
+
+      - name: obj_id
+        sql: obj_id
+        type: number
+        title: 'Object ID'
+
+      - name: krs_name
+        sql: krs_name
+        type: string
+        title: 'KeyResults Name'
+
+      - name: krs_description
+        sql: krs_description
+        type: string
+        title: 'KeyResults Description'
+
+      - name: krs_type
+        sql: krs_type
+        type: string
+        title: 'KeyResults Type'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'EXpected Score'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Created Time'
+
+      - name: create_user
+        sql: create_user
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Updated Time'
+
+      - name: update_user
+        sql: update_user
+        type: number
+        title: 'Updated By User ID'
+
+    measures:
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+      - name: count
+        type: count
+        title: '# of KeyResults'

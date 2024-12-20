@@ -128,3 +128,8 @@ cubes:
       - name: count
         type: count
         title: '# of OKR Objectives'
+
+    joins:
+      - name: key_results
+        sql: '{CUBE}.obj_id = {key_results}.obj_id'
+        relationship: one_to_many
