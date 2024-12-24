@@ -1,0 +1,80 @@
+cubes:
+  - name: goal_kpi_measure
+    title: Goal KPI Measure
+    sql_alias: gkm
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.goal_kpi_measures
+
+    dimensions:
+      - name: gkm_id
+        sql: gkm_id
+        type: number
+        primary_key: true
+        title: 'Goal KPI measure ID'
+
+      - name: gok_id
+        sql: gok_id
+        type: number
+        title: 'Goal KPI ID'
+
+      - name: kot_id
+        sql: kot_id
+        type: number
+        title: 'KPI type ID'
+
+      - name: measure_period
+        sql: measure_period
+        type: string
+        title: 'Measure period'
+
+      - name: dayofweek_month
+        sql: dayofweek_month
+        type: number
+        title: 'Day of week month'
+
+      - name: measure
+        sql: measure
+        type: number
+        title: 'Measure'
+
+      - name: target
+        sql: target
+        type: number
+        title: 'Target'
+
+      - name: order
+        sql: order
+        type: number
+        title: 'Order'
+
+      - name: is_start
+        sql: is_start
+        type: number
+        title: 'Is start'
+
+      - name: lower_limit
+        sql: lower_limit
+        type: number
+        title: 'Lower limit'
+
+      - name: upper_limit
+        sql: upper_limit
+        type: number
+        title: 'Upper limit'
+
+      - name: kpi_measure_name
+        sql: (SELECT name FROM csdb.kpi_org_template WHERE kot_id = ${CUBE}.kot_id)
+        type: string
+        title: 'KPI measure name'
+
+      - name: kpi_measure_description
+        sql: (SELECT description FROM csdb.kpi_org_template WHERE kot_id = ${CUBE}.kot_id)
+        type: string
+        title: 'KPI measure description'
+
+    joins:
+      - name: goal_kpis
+        sql: '{CUBE}.gok_id = {goal_kpis}.gok_id'
+        relationship: many_to_one

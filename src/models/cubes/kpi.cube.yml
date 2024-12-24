@@ -1,90 +1,86 @@
 cubes:
-  - name: key_results
-    title: Key Results
-    sql_alias: kr
+  - name: kpi
+    title: Organization KPIs
+    sql_alias: kpis
     data_source: my-db
     sql: >
       SELECT *
-      FROM csdb.key_results
+      FROM csdb.kpi_org_template
+      WHERE org_id = { COMPILE_CONTEXT.securityContext.org_id }
 
     dimensions:
-      - name: krs_id
-        sql: krs_id
+      - name: kot_id
+        sql: kot_id
         type: number
         primary_key: true
-        title: 'Key Result ID'
+        title: 'KPI ID'
 
-      - name: obj_id
-        sql: obj_id
+      - name: org_id
+        sql: org_id
         type: number
-        title: 'Object ID'
+        title: 'Organization ID'
 
-      - name: krs_name
-        sql: krs_name
+      - name: kpi_icon_url
+        sql: kpi_icon_url
         type: string
-        title: 'KeyResults Name'
+        title: 'KPI Icon URL'
 
-      - name: krs_description
-        sql: krs_description
+      - name: name
+        sql: name
         type: string
-        title: 'KeyResults Description'
+        title: 'KPI Name'
 
-      - name: krs_type
-        sql: krs_type
+      - name: description
+        sql: description
         type: string
-        title: 'KeyResults Type'
+        title: 'KPI Description'
+
+      - name: perspective_name
+        sql: (SELECT name FROM csdb.perspectives WHERE per_id = {CUBE}.perspective_id)
+        type: string
+        title: 'Perspective Name'
+
+      - name: sub_category
+        sql: sub_category
+        type: string
+        title: 'Sub Category'
+
+      - name: measure_period
+        sql: measure_period
+        type: string
+        title: 'Measure Period'
+
+      - name: dayofweek_month
+        sql: dayofweek_month
+        type: string
+        title: 'Day of Week/Month'
+
+      - name: measure
+        sql: measure
+        type: string
+        title: 'Measure'
+
+      - name: kpi_type_target
+        sql: kpi_type_target
+        type: string
+        title: 'KPI Type Target'
+
+      - name: formula
+        sql: formula
+        type: string
+        title: 'Formula'
+
+      - name: order_id
+        sql: order_id
+        type: number
+        title: 'Order ID'
 
       - name: status
         sql: status
         type: number
-        title: 'Status ID'
-
-      - name: active_status
-        sql: active_status
-        type: number
-        title: 'Active Status'
-
-      - name: expected_score
-        sql: expected_score
-        type: number
-        title: 'EXpected Score'
-
-      - name: actual_score
-        sql: actual_score
-        type: number
-        title: 'Actual Score'
-
-      - name: create_time
-        sql: create_time
-        type: time
-        title: 'Created Time'
-
-      - name: create_user
-        sql: create_user
-        type: number
-        title: 'Created By User ID'
-
-      - name: update_time
-        sql: update_time
-        type: time
-        title: 'Updated Time'
-
-      - name: update_user
-        sql: update_user
-        type: number
-        title: 'Updated By User ID'
+        title: 'Status'
 
     measures:
-      - name: total_actual_score
-        sql: actual_score
-        type: sum
-        title: 'Total Actual Score'
-
-      - name: total_expected_score
-        sql: expected_score
-        type: sum
-        title: 'Total Expected Score'
-
       - name: count
         type: count
-        title: '# of KeyResults'
+        title: '# of KPIs'

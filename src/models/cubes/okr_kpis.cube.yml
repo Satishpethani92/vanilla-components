@@ -1,0 +1,15 @@
+cubes:
+  - name: okr_kpis
+    title: OKR KPIs
+    sql_alias: okr_kpi
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.kr_kpi
+
+    dimensions:
+      - name: krk_id
+        sql: krk_id
+        type: number
+        primary_key: true
+        title: 'OKR KPI ID'

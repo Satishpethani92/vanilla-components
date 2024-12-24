@@ -1,0 +1,15 @@
+cubes:
+  - name: project_kpis
+    title: Project KPIs
+    sql_alias: p_kpi
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.initiative_kpi
+
+    dimensions:
+      - name: ink_id
+        sql: ink_id
+        type: number
+        primary_key: true
+        title: 'Project KPI ID'

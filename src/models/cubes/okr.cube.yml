@@ -133,3 +133,7 @@ cubes:
       - name: key_results
         sql: '{CUBE}.obj_id = {key_results}.obj_id'
         relationship: one_to_many
+
+      - name: goal_kpis
+        sql: '{CUBE}.gol_id = {goal_kpis}.gol_id'
+        relationship: one_to_many

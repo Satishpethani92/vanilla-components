@@ -309,3 +309,6 @@ cubes:
       - name: project
         sql: '{CUBE}.gol_id = {project}.gol_id'
         relationship: one_to_many
+      - name: goal_kpis
+        sql: '{CUBE}.gol_id = {goal_kpis}.gol_id'
+        relationship: one_to_many
