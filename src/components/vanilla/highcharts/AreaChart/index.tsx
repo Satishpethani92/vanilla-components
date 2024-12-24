@@ -102,7 +102,7 @@ function getChartOptions(
       title: { text: null },
     },
     yAxis: {
-      title: { text: props.metric?.label || 'Value' },
+      title: { text: props.metric?.title || 'Value' },
     },
     legend: {
       enabled: showLegend,
@@ -136,7 +136,7 @@ function getChartOptions(
     series: [
       {
         type: 'area',
-        name: props.metric?.label ?? 'Series 1',
+        name: props.metric?.title ?? 'Series 1',
         data: seriesData,
         color: COLORS[0] || '#058DC7', // Example color
       },

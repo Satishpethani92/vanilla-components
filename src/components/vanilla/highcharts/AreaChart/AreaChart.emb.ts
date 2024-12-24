@@ -26,7 +26,7 @@ export const meta = {
       category: 'Chart data',
     },
     {
-      name: 'dimension',
+      name: 'slice',
       type: 'dimension',
       label: 'Dimension (X-axis)',
       config: {
@@ -35,7 +35,7 @@ export const meta = {
       category: 'Chart data',
     },
     {
-      name: 'measure',
+      name: 'metric',
       type: 'measure',
       label: 'Measure (Y-axis)',
       config: {
@@ -113,8 +113,8 @@ export default defineComponent(Component, meta, {
       ...inputs,
       results: loadData({
         from: inputs.ds,
-        dimensions: [inputs.dimension],
-        measures: [inputs.measure],
+        dimensions: [inputs.slice],
+        measures: [inputs.metric],
       }),
     };
   },
