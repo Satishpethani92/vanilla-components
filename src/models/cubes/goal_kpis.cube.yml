@@ -40,14 +40,12 @@ cubes:
         title: 'Target'
 
       - name: name
-        sql: (SELECT name FROM csdb.perspective WHERE per_id = {CUBE}.perspective_id)
+        sql: (SELECT per.name
+          FROM csdb.kpi_org_template kot
+          JOIN csdb.perspectives per ON per.per_id = kot.perspective_id
+          WHERE kot.kot_id = {CUBE}.kot_id)
         type: string
         title: 'KPI Type Name'
-
-      - name: perspective_id
-        sql: perspective_id
-        type: number
-        title: 'Perspective ID'
 
       - name: is_required
         sql: is_required
