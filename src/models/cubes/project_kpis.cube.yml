@@ -13,3 +13,117 @@ cubes:
         type: number
         primary_key: true
         title: 'Project KPI ID'
+
+      - name: kot_id
+        sql: kot_id
+        type: number
+        title: 'KPI Org Template ID'
+
+      - name: gok_id
+        sql: gok_id
+        type: number
+        title: 'Goal KPI ID'
+
+      - name: measure_period
+        sql: measure_period
+        type: string
+        title: 'Measure Period'
+
+      - name: dayofweek_month
+        sql: dayofweek_month
+        type: string
+        title: 'Day of Week/Month'
+
+      - name: measure
+        sql: measure
+        type: string
+        title: 'Measure'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: target
+        sql: target
+        type: number
+        title: 'Target'
+
+      - name: lower_limit
+        sql: lower_limit
+        type: string
+        title: 'Lower Limit'
+
+      - name: upper_limit
+        sql: upper_limit
+        type: string
+        title: 'Upper Limit'
+
+      - name: created_by_goal
+        sql: created_by_goal
+        type: boolean
+        title: 'Created By Goal?'
+
+      - name: is_start
+        sql: is_start
+        type: boolean
+        title: 'Is Start?'
+
+      - name: is_archive
+        sql: is_archive
+        type: boolean
+        title: 'Is Archive?'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: kpi_name
+        sql: ( SELECT kot.name FROM csdb.kpi_org_template kot WHERE kot.kot_id = {CUBE}.kot_id )
+        type: string
+        title: 'KPI Name'
+
+      - name: kpi_type_target
+        sql: ( SELECT kot.kpi_type_target FROM csdb.kpi_org_template kot WHERE kot.kot_id = {CUBE}.kot_id )
+        type: string
+        title: 'KPI Type Target'
+
+      - name: perspective_id
+        sql: ( SELECT kot.perspective_id FROM csdb.kpi_org_template kot WHERE kot.kot_id = {CUBE}.kot_id )
+        type: number
+        title: 'Perspective ID'
+
+      - name: perspective_name
+        sql: ( SELECT p.name FROM csdb.kpi_org_template kot JOIN csdb.perspectives p ON p.per_id = kot.perspective_id WHERE kot.kot_id = {CUBE}.kot_id )
+        type: string
+        title: 'Perspective Name'
+
+      - name: per_id
+        sql: ( SELECT p.per_id FROM csdb.kpi_org_template kot JOIN csdb.perspectives p ON p.per_id = kot.perspective_id WHERE kot.kot_id = {CUBE}.kot_id )
+        type: number
+        title: 'Perspective ID'
+
+      - name: status_name
+        sql: ( SELECT s.name FROM csdb.master_table s WHERE s.msr_id = {CUBE}.status )
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: ( SELECT s.font_color FROM csdb.master_table s WHERE s.msr_id = {CUBE}.status )
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: ( SELECT s.background_color FROM csdb.master_table s WHERE s.msr_id = {CUBE}.status )
+        type: string
+        title: 'Status Background Color'
+
+    joins:
+      - name: project
+        sql: '{CUBE}.obj_id = {project}.id'
+        relationship: many_to_one
+
+      - name: project_kpi_records
+        sql: '{CUBE}.ink_id = {project_kpi_records}.ink_id'
+        relationship: one_to_many

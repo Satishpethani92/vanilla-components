@@ -1,0 +1,120 @@
+cubes:
+  - name: okr_kpi_records
+    title: OKR KPI Records
+    sql_alias: okr_kpi_record
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM kr_kpi_records
+
+    dimensions:
+      - name: kkr_id
+        sql: kkr_id
+        type: number
+        primary_key: true
+        title: 'OKR KPI Record ID'
+
+      - name: krk_id
+        sql: krk_id
+        type: number
+        title: 'OKR KPI ID'
+
+      - name: kpi_date
+        sql: kpi_date
+        type: time
+        title: 'KPI Date'
+
+      - name: measure
+        sql: measure
+        type: string
+        title: 'Measure'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: target_value
+        sql: target_value
+        type: number
+        title: 'Target Value'
+
+      - name: actual_value
+        sql: actual_value
+        type: number
+        title: 'Actual Value'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: comments
+        sql: comments
+        type: string
+        title: 'Comments'
+
+      - name: create_user
+        sql: create_user
+        type: number
+        title: 'Created By (User ID)'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_user
+        sql: update_user
+        type: number
+        title: 'Updated By (User ID)'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      - name: status_name
+        sql: >
+          (
+            SELECT s.name
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: >
+          (
+            SELECT s.font_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: >
+          (
+            SELECT s.background_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Background Color'
+
+    joins:
+      - name: okr_kpis
+        sql: '{CUBE}.krk_id = {okr_kpis}.krk_id'
+        relationship: many_to_one
