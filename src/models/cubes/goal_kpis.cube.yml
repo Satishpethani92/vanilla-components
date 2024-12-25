@@ -58,12 +58,12 @@ cubes:
         title: 'Is Archive'
 
       - name: kpi_measure_name
-        sql: (SELECT name FROM csdb.kpi_org_template WHERE kot_id = ${CUBE}.kot_id)
+        sql: (SELECT name FROM csdb.kpi_org_template WHERE kot_id = {CUBE}.kot_id)
         type: string
         title: 'KPI measure name'
 
       - name: kpi_measure_description
-        sql: (SELECT description FROM csdb.kpi_org_template WHERE kot_id = ${CUBE}.kot_id)
+        sql: (SELECT description FROM csdb.kpi_org_template WHERE kot_id = {CUBE}.kot_id)
         type: string
         title: 'KPI measure description'
 
