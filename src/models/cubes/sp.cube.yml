@@ -4,17 +4,32 @@ cubes:
     sql_alias: sp
     data_source: my-db
     sql: >
-      SELECT *
-      FROM csdb.strategy_plan
-      WHERE (
-        org_id = { COMPILE_CONTEXT.securityContext.org_id }
-        AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
-        ) OR stp_id IN (
+      SELECT sp.*
+      FROM csdb.strategy_plan sp
+      WHERE 
+          (
+            ( sp.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+              AND sp.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+            ) OR sp.stp_id IN (
               SELECT ro.obj_id
-              FROM csdb.user_role_access ura
-                JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                FROM csdb.user_role_access ura
+                JOIN csdb.role_object ro
+                  ON ura.rbj_id = ro.rbj_id
                 WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
                   AND ro.obj_type = 'STRATEGYPLAN'
+            ) OR sp.stp_id IN (
+              SELECT plo.stp_id
+                FROM csdb.plan_organization plo
+                JOIN csdb.team_structure ts
+                  ON ts.ogs_id = plo.ogs_id
+                  WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+            ) OR sp.stp_id IN (
+              SELECT pot.stp_id
+                FROM csdb.plan_team pot
+                JOIN csdb.teams_users tu
+                  ON tu.tea_id = pot.tea_id
+                  WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+            )
           )
 
     dimensions:

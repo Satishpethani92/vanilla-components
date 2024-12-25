@@ -4,17 +4,31 @@ cubes:
     sql_alias: g
     data_source: my-db
     sql: >
-      SELECT *
-      FROM csdb.goals
-      WHERE (
-        org_id = { COMPILE_CONTEXT.securityContext.org_id }
-        AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
-        ) OR gol_id IN (
+      SELECT go.*
+      FROM csdb.goals go
+      WHERE 
+          (
+            ( go.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+              AND go.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+            ) OR go.gol_id IN (
              SELECT ro.obj_id
               FROM csdb.user_role_access ura
                 JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
                 WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
                   AND ro.obj_type = 'GOAL'
+            ) OR go.gol_id IN (
+              SELECT glo.gol_id
+                FROM csdb.goal_organization glo
+                JOIN csdb.team_structure ts
+                  ON ts.ogs_id = glo.ogs_id
+                  WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id } 
+            ) OR go.gol_id IN (
+              SELECT got.gol_id
+                FROM csdb.goal_team got
+                JOIN csdb.teams_users tu
+                  ON tu.tea_id = got.tea_id
+                  WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+            )
           )
 
     dimensions:

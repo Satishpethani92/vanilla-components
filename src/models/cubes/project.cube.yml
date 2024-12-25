@@ -4,19 +4,32 @@ cubes:
     title: Strategic Initiatives
     data_source: my-db
     sql: >
-      SELECT *
-      FROM csdb.objectives
+      SELECT obj.*
+      FROM csdb.objectives obj
       WHERE otype = 'strategic-initiative'
-        AND (
+        AND 
+        (
           (
-            org_id = { COMPILE_CONTEXT.securityContext.org_id }
-            AND usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
-          ) OR obj_id IN (
+            obj.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+            AND obj.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
                 SELECT ro.obj_id
                 FROM csdb.user_role_access ura
                   JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
                   WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
-                    AND ro.obj_type = 'PROJECT'
+                    AND ro.obj_type = 'OKR'
+          ) OR obj.obj_id IN (
+                SELECT obo.obj_id
+                  FROM csdb.objective_organization obo
+                  JOIN csdb.team_structure ts
+                    ON ts.ogs_id = obo.ogs_id
+                    WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT obt.obj_id
+                  FROM csdb.objective_team obt
+                  JOIN csdb.teams_users tu
+                    ON tu.tea_id = obt.tea_id
+                    WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
           )
         )
 
