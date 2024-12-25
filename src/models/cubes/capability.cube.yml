@@ -144,6 +144,11 @@ cubes:
         type: string
         title: 'Capability Segment'
 
+      - name: capability_segment_weight
+        sql: (SELECT weight FROM csdb.org_master_table WHERE omt_id = {CUBE}.capability_segment)
+        type: string
+        title: 'Capability Segment Weight'
+
       - name: organization_name
         sql: (SELECT org_name FROM csdb.organization WHERE org_id = {CUBE}.org_id)
         type: string

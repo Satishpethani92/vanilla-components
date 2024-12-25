@@ -1,0 +1,157 @@
+cubes:
+  - name: kr_tasks
+    title: KR Tasks
+    sql_alias: krt
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.kr_tasks
+
+    dimensions:
+      # Primary key
+      - name: krt_id
+        sql: krt_id
+        type: number
+        primary_key: true
+        title: 'KR Task ID'
+
+      - name: krs_id
+        sql: krs_id
+        type: number
+        title: 'Key Result ID'
+
+      - name: task_name
+        sql: task_name
+        type: string
+        title: 'Task Name'
+
+      - name: due_date
+        sql: due_date
+        type: time
+        title: 'Due Date'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: assigned_to
+        sql: assigned_to
+        type: number
+        title: 'Assigned User ID'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: comments
+        sql: comments
+        type: string
+        title: 'Comments'
+
+      - name: create_user
+        sql: create_user
+        type: number
+        title: 'Created By (User ID)'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_user
+        sql: update_user
+        type: number
+        title: 'Updated By (User ID)'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      - name: krm_icon
+        sql: krm_icon
+        type: string
+        title: 'KRM Icon'
+
+      - name: assigned_user_photo_url
+        sql: >
+          (
+            SELECT u.user_photo_url
+            FROM user u
+            WHERE u.usr_id = {CUBE}.assigned_to
+          )
+        type: string
+        title: 'Assigned User Photo URL'
+
+      - name: assigned_user_name
+        sql: >
+          (
+            SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+            FROM user u
+            WHERE u.usr_id = {CUBE}.assigned_to
+          )
+        type: string
+        title: 'Assigned User Name'
+
+      - name: status_name
+        sql: >
+          (
+            SELECT s.name
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: >
+          (
+            SELECT s.font_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: >
+          (
+            SELECT s.background_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Background Color'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of KR Tasks'
+
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+    # If you want to link `kr_tasks` to `key_results` via krs_id:
+    joins:
+      - name: key_results
+        sql: '{CUBE}.krs_id = {key_results}.krs_id'
+        relationship: many_to_one

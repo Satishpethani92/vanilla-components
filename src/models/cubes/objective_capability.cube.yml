@@ -1,0 +1,68 @@
+cubes:
+  - name: objective_capabilities
+    title: Objective Capabilities
+    sql_alias: obc
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.objective_capabilities
+
+    dimensions:
+      - name: obc_id
+        sql: obc_id
+        type: number
+        primary_key: true
+        title: 'Objective Capability ID'
+
+      - name: obj_id
+        sql: obj_id
+        type: number
+        title: 'Objective ID'
+
+      - name: cap_id
+        sql: cap_id
+        type: number
+        title: 'Capability ID'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: approve_status
+        sql: approve_status
+        type: boolean
+        title: 'Approve Status'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Objective Capabilities'
+
+    joins:
+      - name: capability
+        sql: '{CUBE}.cap_id = {capability}.cap_id'
+        relationship: many_to_one
+
+      - name: okr
+        sql: '{CUBE}.obj_id = {okr}.obj_id'
+        relationship: many_to_one
+
+      - name: project
+        sql: '{CUBE}.obj_id = {project}.obj_id'
+        relationship: many_to_one

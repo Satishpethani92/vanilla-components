@@ -1,0 +1,64 @@
+cubes:
+  - name: sp_capabilities
+    title: Plan Capabilities
+    sql_alias: poc
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.strategy_capability_map
+
+    dimensions:
+      - name: scm_id
+        sql: scm_id
+        type: number
+        primary_key: true
+        title: 'Plan Capability ID'
+
+      - name: stp_id
+        sql: stp_id
+        type: number
+        title: 'Plan ID'
+
+      - name: cap_id
+        sql: cap_id
+        type: number
+        title: 'Capability ID'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      - name: create_user_id
+        sql: create_user_id
+        type: number
+        title: 'Created By User ID'
+
+      - name: update_user_id
+        sql: update_user_id
+        type: number
+        title: 'Updated By User ID'
+
+      - name: approve_status
+        sql: approve_status
+        type: boolean
+        title: 'Approve Status'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Goal Capabilities'
+
+    joins:
+      - name: capability
+        sql: '{CUBE}.cap_id = {capability}.cap_id'
+        relationship: many_to_one
+
+      - name: strategy_plan
+        sql: '{CUBE}.stp_id = {strategy_plan}.stp_id'
+        relationship: many_to_one

@@ -306,9 +306,15 @@ cubes:
       - name: okr
         sql: '{CUBE}.gol_id = {okr}.gol_id'
         relationship: one_to_many
+
       - name: project
         sql: '{CUBE}.gol_id = {project}.gol_id'
         relationship: one_to_many
+
       - name: goal_kpis
         sql: '{CUBE}.gol_id = {goal_kpis}.gol_id'
+        relationship: one_to_many
+
+      - name: goal_capabilities
+        sql: '{CUBE}.gol_id = {goal_capabilities}.gol_id'
         relationship: one_to_many

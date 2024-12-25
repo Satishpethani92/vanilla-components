@@ -141,3 +141,7 @@ cubes:
       - name: okr_kpis
         sql: '{CUBE}.obj_id = {okr_kpis}.obj_id'
         relationship: one_to_many
+
+      - name: objective_capabilities
+        sql: '{CUBE}.obj_id = {objective_capabilities}.obj_id'
+        relationship: one_to_many

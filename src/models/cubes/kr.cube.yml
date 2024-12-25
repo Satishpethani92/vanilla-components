@@ -88,3 +88,12 @@ cubes:
       - name: count
         type: count
         title: '# of KeyResults'
+
+    joins:
+      - name: kr_tasks
+        sql: '{CUBE}.krs_id = {kr_tasks}.krs_id'
+        relationship: one_to_many
+
+      - name: kr_milestones
+        sql: '{CUBE}.krs_id = {kr_milestones}.krs_id'
+        relationship: one_to_many

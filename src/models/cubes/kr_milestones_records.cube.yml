@@ -1,0 +1,145 @@
+cubes:
+  - name: kr_milestones_records
+    title: KR Milestones Records
+    sql_alias: kmr
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.kr_milestones_records
+
+    dimensions:
+      # Primary Key
+      - name: kmr_id
+        sql: kmr_id
+        type: number
+        primary_key: true
+        title: 'Milestone Record ID'
+
+      - name: krm_id
+        sql: krm_id
+        type: number
+        title: 'KR Milestone ID'
+
+      - name: start_date
+        sql: start_date
+        type: time
+        title: 'Start Date'
+
+      - name: end_date
+        sql: end_date
+        type: time
+        title: 'End Date'
+
+      - name: measure
+        sql: measure
+        type: string
+        title: 'Measure'
+
+      - name: target_value
+        sql: target_value
+        type: string
+        title: 'Target Value'
+
+      - name: actual_value
+        sql: actual_value
+        type: string
+        title: 'Actual Value'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: comments
+        sql: comments
+        type: string
+        title: 'Comments'
+
+      - name: create_user
+        sql: create_user
+        type: number
+        title: 'Created By (User ID)'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_user
+        sql: update_user
+        type: number
+        title: 'Updated By (User ID)'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      # --------------------------------------------------------------------
+      # Inline subqueries for status fields from `master_table`
+      # --------------------------------------------------------------------
+      - name: status_name
+        sql: >
+          (
+            SELECT s.name
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: >
+          (
+            SELECT s.font_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: >
+          (
+            SELECT s.background_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Background Color'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Milestone Records'
+
+      # Optional sums for actual/expected scores, etc.
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+    joins:
+      - name: kr_milestones
+        sql: '{CUBE}.krm_id = {kr_milestones}.krm_id'
+        relationship: many_to_one

@@ -1,0 +1,184 @@
+cubes:
+  - name: kr_milestones
+    title: KR Milestones
+    sql_alias: krm
+    data_source: my-db
+    sql: >
+      SELECT *
+      FROM csdb.kr_milestones
+
+    dimensions:
+      - name: krm_id
+        sql: krm_id
+        type: number
+        primary_key: true
+        title: 'KR Milestone ID'
+
+      - name: krs_id
+        sql: krs_id
+        type: number
+        title: 'Key Result ID'
+
+      - name: milestone_name
+        sql: milestone_name
+        type: string
+        title: 'Milestone Name'
+
+      - name: krm_icon
+        sql: krm_icon
+        type: string
+        title: 'KR Milestone Icon'
+
+      - name: start_date
+        sql: start_date
+        type: time
+        title: 'Start Date'
+
+      - name: end_date
+        sql: end_date
+        type: time
+        title: 'End Date'
+
+      - name: assigned_to
+        sql: assigned_to
+        type: number
+        title: 'Assigned User ID'
+
+      - name: status
+        sql: status
+        type: number
+        title: 'Status ID'
+
+      - name: active_status
+        sql: active_status
+        type: number
+        title: 'Active Status'
+
+      - name: measure_period
+        sql: measure_period
+        type: string
+        title: 'Measure Period'
+
+      - name: day_of_measure
+        sql: day_of_measure
+        type: string
+        title: 'Day of Measure'
+
+      - name: measure
+        sql: measure
+        type: string
+        title: 'Measure'
+
+      - name: target
+        sql: target
+        type: string
+        title: 'Target'
+
+      - name: expected_score
+        sql: expected_score
+        type: number
+        title: 'Expected Score'
+
+      - name: actual_score
+        sql: actual_score
+        type: number
+        title: 'Actual Score'
+
+      - name: comments
+        sql: comments
+        type: string
+        title: 'Comments'
+
+      - name: create_user
+        sql: create_user
+        type: number
+        title: 'Created By (User ID)'
+
+      - name: create_time
+        sql: create_time
+        type: time
+        title: 'Create Time'
+
+      - name: update_user
+        sql: update_user
+        type: number
+        title: 'Updated By (User ID)'
+
+      - name: update_time
+        sql: update_time
+        type: time
+        title: 'Update Time'
+
+      - name: assigned_user_photo_url
+        sql: >
+          (
+            SELECT u.user_photo_url
+            FROM user u
+            WHERE u.usr_id = {CUBE}.assigned_to
+          )
+        type: string
+        title: 'Assigned User Photo'
+
+      - name: assigned_user_name
+        sql: >
+          (
+            SELECT IFNULL(CONCAT(u.first_name, ' ', u.last_name), u.user_name)
+            FROM user u
+            WHERE u.usr_id = {CUBE}.assigned_to
+          )
+        type: string
+        title: 'Assigned User Name'
+
+      - name: status_name
+        sql: >
+          (
+            SELECT s.name
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Name'
+
+      - name: status_font_color
+        sql: >
+          (
+            SELECT s.font_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Font Color'
+
+      - name: status_background_color
+        sql: >
+          (
+            SELECT s.background_color
+            FROM master_table s
+            WHERE s.msr_id = {CUBE}.status
+          )
+        type: string
+        title: 'Status Background Color'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of KR Milestones'
+
+      - name: total_expected_score
+        sql: expected_score
+        type: sum
+        title: 'Total Expected Score'
+
+      - name: total_actual_score
+        sql: actual_score
+        type: sum
+        title: 'Total Actual Score'
+
+    joins:
+      - name: key_results
+        sql: '{CUBE}.krs_id = {key_results}.krs_id'
+        relationship: many_to_one
+
+      - name: kr_milestones_records
+        sql: '{CUBE}.krm_id = {kr_milestones_records}.krm_id'
+        relationship: one_to_many
