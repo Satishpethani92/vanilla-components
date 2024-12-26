@@ -10,9 +10,6 @@ import Container from '../../Container';
 
 // if you want the same color palette
 
-/**
- * Props definition similar to your Pie chart's interface, adapted for an Area chart.
- */
 type Props = {
   results: DataResponse;
   title: string;
@@ -40,11 +37,6 @@ export default function AreaChart(props: Props) {
   // Build chart options (similar to chartOptions in Pie example)
   const options = getChartOptions(props, handlePointClick);
 
-  /**
-   * Handle a point click. Highcharts typically passes event data containing
-   * the `point` with index, category (x), and y values.
-   * We'll parse them & call `props.onClick`.
-   */
   function handlePointClick(e: Highcharts.PointClickEventObject) {
     // If the user re-clicks the same "active" point, you might want to reset
     // the filter. But you can tweak that logic as needed.
