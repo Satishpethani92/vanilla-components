@@ -1,18 +1,21 @@
 import { DataResponse, Dimension, Measure } from '@embeddable.com/core';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import HighchartsTreeMap from 'highcharts/modules/treemap';
-import HighchartsTreeGraph from 'highcharts/modules/treegraph';
+import HighchartsTreeMap from 'highcharts/modules/treemap.js';
+import HighchartsTreeGraph from 'highcharts/modules/treegraph.js';
+
 import { useRef } from 'react';
 
 import { COLORS } from '../../../constants';
 import formatValue from '../../../util/format';
 import Container from '../../Container';
-
-console.log('require', require.resolve('highcharts/modules/treegraph.js'));
 // Initialize the treegraph module
-HighchartsTreeGraph(Highcharts);
-HighchartsTreeMap(Highcharts);
+try {
+  HighchartsTreeGraph(Highcharts);
+  HighchartsTreeMap(Highcharts);
+} catch (e) {
+  console.log('error', e);
+}
 
 type Record = { [p: string]: string | number };
 
