@@ -109,6 +109,11 @@ export default defineComponent(Component, meta, {
   // Map your inputs into props that you want to pass down to the React component.
   // In particular, you can use `loadData()` to fetch the dimension & measure data.
   props: (inputs: Inputs<typeof meta>) => {
+    console.log({
+      from: inputs.ds,
+      dimensions: [inputs.slice],
+      measures: [inputs.metric],
+    });
     return {
       ...inputs,
       results: loadData({

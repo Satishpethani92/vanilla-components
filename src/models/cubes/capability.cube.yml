@@ -24,6 +24,11 @@ cubes:
         primary_key: true
         title: 'Capability ID'
 
+      - name: display_cap_id
+        sql: cap_id
+        type: number
+        title: 'Display Capability ID'
+
       - name: org_id
         sql: org_id
         type: number

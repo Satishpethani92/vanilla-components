@@ -37,6 +37,11 @@ cubes:
         sql: stp_id
         type: number
         primary_key: true
+        title: 'Primary ID'
+
+      - name: display_stp_id
+        sql: stp_id
+        type: number
         title: 'Strategy Plan ID'
 
       - name: org_id

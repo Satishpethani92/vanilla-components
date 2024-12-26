@@ -1,16 +1,12 @@
-import { loadData } from '@embeddable.com/core';
+import { OrderBy, loadData } from '@embeddable.com/core';
 import { EmbeddedComponentMeta, Inputs, defineComponent } from '@embeddable.com/react';
-
 import Component from './index';
 
-// <— The React component from above
-
-// 1. Define the metadata, e.g., name, label, inputs, events
 export const meta = {
   name: 'TreeGraphBox',
-  label: 'Tree Graph (Box)',
-  category: 'HighCharts: Tree Graph (Box)',
-
+  label: 'Tree Graph Box (Highcharts)',
+  category: 'Charts: essentials',
+  classNames: ['inside-card'],
   inputs: [
     {
       name: 'ds',
@@ -21,7 +17,8 @@ export const meta = {
     {
       name: 'idDimension',
       type: 'dimension',
-      label: 'Node ID Dimension',
+      label: 'ID (Node)',
+      description: 'Each row should have a unique ID for the node.',
       config: {
         dataset: 'ds',
       },
@@ -30,7 +27,8 @@ export const meta = {
     {
       name: 'parentDimension',
       type: 'dimension',
-      label: 'Parent ID Dimension',
+      label: 'Parent ID',
+      description: 'Specify the parent ID for each node. (Empty for root)',
       config: {
         dataset: 'ds',
       },
@@ -39,66 +37,71 @@ export const meta = {
     {
       name: 'nameDimension',
       type: 'dimension',
-      label: 'Node Name Dimension',
+      label: 'Display Name',
+      description: 'The display name of the node in the TreeGraph.',
       config: {
         dataset: 'ds',
       },
       category: 'Chart data',
     },
     {
-      name: 'chartTitle',
+      name: 'title',
       type: 'string',
       label: 'Chart Title',
-      defaultValue: 'Treegraph with box layout',
       category: 'Chart settings',
     },
-  ],
-
-  // If you want to handle node clicks, you can define an event:
-  events: [
     {
-      name: 'onNodeClick',
-      label: 'Node Click',
-      properties: [
-        { name: 'nodeId', type: 'string' },
-        { name: 'nodeName', type: 'string' },
-      ],
+      name: 'description',
+      type: 'string',
+      label: 'Description',
+      category: 'Chart settings',
+    },
+    {
+      name: 'enableDownloadAsCSV',
+      type: 'boolean',
+      label: 'Show download as CSV',
+      category: 'Export options',
+      defaultValue: true,
+    },
+    {
+      name: 'enableDownloadAsPNG',
+      type: 'boolean',
+      label: 'Show download as PNG',
+      category: 'Export options',
+      defaultValue: true,
     },
   ],
 } as const satisfies EmbeddedComponentMeta;
 
-// 2. Export the component definition
 export default defineComponent(Component, meta, {
-  // 2a. props: transform your inputs -> component props
   props: (inputs: Inputs<typeof meta>) => {
-    // Load the dataset
-    const result = loadData({
+    const orderProp: OrderBy[] = [];
+
+    if (inputs.idDimension) {
+      orderProp.push({
+        property: inputs.idDimension,
+        direction: 'asc',
+      });
+    }
+    console.log('inputs', inputs);
+
+    console.log({
       from: inputs.ds,
       dimensions: [inputs.idDimension, inputs.parentDimension, inputs.nameDimension],
       measures: [],
+      orderBy: orderProp,
     });
-
-    const data = (result.data || []).map((row) => {
-      return {
-        id: String(row[inputs.idDimension.name]),
-        parent: row[inputs.parentDimension.name] ? String(row[inputs.parentDimension.name]) : '',
-        name: String(row[inputs.nameDimension.name]),
-      };
+    const results = loadData({
+      from: inputs.ds,
+      dimensions: [inputs.idDimension, inputs.parentDimension, inputs.nameDimension].filter(
+        (e) => e,
+      ),
+      measures: [],
     });
 
     return {
-      data,
-      chartTitle: inputs.chartTitle,
+      ...inputs,
+      results,
     };
-  },
-
-  // 2b. events: map chart events to embeddable events
-  events: {
-    onNodeClick: (point) => {
-      return {
-        nodeId: point.id || '',
-        nodeName: point.name || '',
-      };
-    },
   },
 });
