@@ -17,7 +17,7 @@ cubes:
                 FROM csdb.user_role_access ura
                   JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
                   WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
-                    AND ro.obj_type = 'OKR'
+                    AND ro.obj_type = 'PROJECT'
           ) OR obj.obj_id IN (
                 SELECT obo.obj_id
                   FROM csdb.objective_organization obo

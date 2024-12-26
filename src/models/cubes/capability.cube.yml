@@ -64,10 +64,10 @@ cubes:
         type: number
         title: 'Parent Capability ID'
 
-      - name: capability_level
+      - name: capability_level_id
         sql: capability_level
         type: number
-        title: 'Capability Level'
+        title: 'Capability Level Id'
 
       - name: interest_level
         sql: interest_level
@@ -109,7 +109,12 @@ cubes:
         type: string
         title: 'Capability Code'
 
-      - name: capability_level_name
+      - name: capability_level
+        sql: (SELECT name FROM csdb.master_table WHERE msr_id = {CUBE}.capability_level)
+        type: string
+        title: 'Capability Level'
+
+      - name: maturity_level_name
         sql: (SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.interest_level)
         type: string
         title: 'Maturity Level'
