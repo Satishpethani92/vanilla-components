@@ -3,8 +3,8 @@ import { EmbeddedComponentMeta, Inputs, defineComponent } from '@embeddable.com/
 import Component from './index';
 
 export const meta = {
-  name: 'TreeGraphBox',
-  label: 'Tree Graph Box (Highcharts)',
+  name: 'SunburstChart',
+  label: 'Sunburst Chart (Highcharts)',
   category: 'HighCharts',
   classNames: ['inside-card'],
   inputs: [
@@ -17,7 +17,7 @@ export const meta = {
     {
       name: 'idDimension',
       type: 'dimension',
-      label: 'ID (Node)',
+      label: 'Node ID',
       description: 'Each row should have a unique ID for the node.',
       config: {
         dataset: 'ds',
@@ -28,7 +28,7 @@ export const meta = {
       name: 'parentDimension',
       type: 'dimension',
       label: 'Parent ID',
-      description: 'Specify the parent ID for each node. (Empty for root)',
+      description: 'Specify the parent ID for each node. (Leave empty for root.)',
       config: {
         dataset: 'ds',
       },
@@ -37,8 +37,18 @@ export const meta = {
     {
       name: 'nameDimension',
       type: 'dimension',
-      label: 'Display Name',
-      description: 'The display name of the node in the TreeGraph.',
+      label: 'Node Name',
+      description: 'The name of the node in the Sunburst chart.',
+      config: {
+        dataset: 'ds',
+      },
+      category: 'Chart data',
+    },
+    {
+      name: 'valueDimension',
+      type: 'dimension',
+      label: 'Value',
+      description: 'Numeric value for the node (optional).',
       config: {
         dataset: 'ds',
       },
@@ -78,18 +88,24 @@ export default defineComponent(Component, meta, {
     const orderProp: OrderBy[] = [];
 
     if (inputs.idDimension) {
+      // Optionally sort by the ID dimension ascending
       orderProp.push({
         property: inputs.idDimension,
         direction: 'asc',
       });
     }
 
+    // Load the data from the configured dataset, pulling in only the relevant dimensions.
     const results = loadData({
       from: inputs.ds,
-      dimensions: [inputs.idDimension, inputs.parentDimension, inputs.nameDimension].filter(
-        (e) => e,
-      ),
+      dimensions: [
+        inputs.idDimension,
+        inputs.parentDimension,
+        inputs.nameDimension,
+        inputs.valueDimension,
+      ].filter(Boolean),
       measures: [],
+      orderBy: orderProp,
     });
 
     return {

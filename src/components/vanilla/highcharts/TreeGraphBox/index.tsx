@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import Highcharts from 'highcharts';
+import Highcharts, { Options } from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 // The following modules need to be initialized for the treegraph to work:
@@ -12,7 +12,6 @@ import Container from '../../Container';
 
 try {
   if (typeof Highcharts === 'object') {
-    console.log('Highcharts is ready to use!', Highcharts);
     treemapModule(Highcharts);
     treegraphModule(Highcharts);
     exportingModule(Highcharts);
@@ -42,7 +41,7 @@ function transformResultsToTreeGraphData(props: Props): TreeGraphPoint[] {
   if (!results?.data?.length) {
     return [];
   }
-
+  console.log('results', results.data);
   const data: TreeGraphPoint[] = results.data.map((row: any) => ({
     id: String(row[idDimension?.name] ?? ''),
     parent: String(row[parentDimension?.name] ?? ''),
@@ -59,6 +58,7 @@ export default function TreeGraphBoxChart(props: Props) {
     return {
       chart: {
         type: 'treegraph',
+        height: '100%',
       },
       title: {
         text: props.title || 'Treegraph with box layout',
@@ -82,6 +82,8 @@ export default function TreeGraphBoxChart(props: Props) {
             pointFormat: '{point.name}',
             style: {
               whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
             },
           },
           levels: [

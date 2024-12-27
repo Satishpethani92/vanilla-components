@@ -13,7 +13,7 @@ export const meta = {
   label: 'Area chart',
   // You can set a default size or class name here, if you have one
   classNames: ['inside-card'],
-  category: 'HighCharts: Area charts',
+  category: 'HighCharts',
 
   //
   // 2. Add the list of inputs (props) this chart requires.

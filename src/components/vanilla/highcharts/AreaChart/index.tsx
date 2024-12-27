@@ -34,31 +34,18 @@ type Record = { [p: string]: string | number };
 export default function AreaChart(props: Props) {
   const chartRef = useRef<HighchartsReact.RefObject>(null);
 
-  // Build chart options (similar to chartOptions in Pie example)
   const options = getChartOptions(props, handlePointClick);
 
   function handlePointClick(e: Highcharts.PointClickEventObject) {
-    // If the user re-clicks the same "active" point, you might want to reset
-    // the filter. But you can tweak that logic as needed.
     const { x, y, index } = e.point || {};
-    // For your dimension filter, we look up the actual name if needed.
-    // Because we merged or not, you might have "Other" as a category.
-    // We'll assume the dimension name is stored in `chartData[index]`
-    // or fallback to x if you’re using categories.
-
-    // If user clicks outside or on the same active point, reset:
-    // That logic is up to you; shown here just as an example:
     const isOther = props.maxSegments && index + 1 >= props.maxSegments;
     if (isOther) {
-      // If you don't want to filter "Other," skip or do your logic:
       return;
     }
 
-    // Convert to string if needed
     const sliceValue = x !== undefined && x !== null ? String(x) : null;
     const metricValue = y !== undefined && y !== null ? String(y) : null;
 
-    // Fire the onClick callback
     props.onClick({ slice: sliceValue, metric: metricValue });
   }
 
