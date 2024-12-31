@@ -46,7 +46,7 @@ export const meta = {
     },
     {
       name: 'valueDimension',
-      type: 'dimension',
+      type: 'measure',
       label: 'Value',
       description: 'Numeric value for the node (optional).',
       config: {
@@ -95,6 +95,7 @@ export default defineComponent(Component, meta, {
       });
     }
 
+    console.log("defineComponent inputs-----",inputs);
     // Load the data from the configured dataset, pulling in only the relevant dimensions.
     const results = loadData({
       from: inputs.ds,
@@ -102,9 +103,8 @@ export default defineComponent(Component, meta, {
         inputs.idDimension,
         inputs.parentDimension,
         inputs.nameDimension,
-        inputs.valueDimension,
       ].filter(Boolean),
-      measures: [],
+      measures: [inputs.valueDimension],
       orderBy: orderProp,
     });
 

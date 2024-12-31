@@ -62,11 +62,13 @@ function transformResultsToSunburstData(props: Props): SunburstPoint[] {
 
 export default function SunburstChart(props: Props) {
   const chartData = useMemo(() => transformResultsToSunburstData(props), [props.results]);
-  console.log('chartData', chartData);
+  console.log('SunburstChart chartData', chartData);
+
   const options = useMemo(() => {
     return {
       chart: {
-        height: '500px',
+        height: '100%',
+        width: '100%',
       },
       title: {
         text: props.title || 'Sunburst Chart Example',
@@ -77,69 +79,13 @@ export default function SunburstChart(props: Props) {
       series: [
         {
           type: 'sunburst',
-          data: [
-            {
-              id: '862',
-              parent: '',
-              name: 'Xinfin Apothem edited',
-              value: 1,
-            },
-            {
-              id: '866',
-              parent: '862',
-              name: 'Product Distribution ',
-              value: 1,
-            },
-            {
-              id: '867',
-              parent: '862',
-              name: 'Product Distribution',
-              value: 2,
-            },
-            {
-              id: '868',
-              parent: '862',
-              name: 'Research and Development',
-              value: 3,
-            },
-            {
-              id: '1163',
-              parent: '862',
-              name: 'childof strategic cap 23aug',
-              value: 4,
-            },
-            {
-              id: '1',
-              parent: '868',
-              name: 'Product Distribution ',
-              value: 1,
-            },
-            {
-              id: '2',
-              parent: '868',
-              name: 'Product Distribution',
-              value: 2,
-            },
-            {
-              id: '3',
-              parent: '868',
-              name: 'Research and Development',
-              value: 3,
-            },
-            {
-              id: '4',
-              parent: '868',
-              name: 'childof strategic cap 23aug',
-              value: 4,
-            },
-          ],
+          data: chartData,
           allowDrillToNode: true,
           cursor: 'pointer',
           name: 'Root',
           borderRadius: 3,
           dataLabels: {
             format: '{point.name}',
-            // Optionally filter out small arcs
             filter: {
               property: 'innerArcLength',
               operator: '>',
@@ -191,10 +137,10 @@ export default function SunburstChart(props: Props) {
         enabled: true,
       },
     };
-  }, [props.title, props.description]);
+  }, [chartData, props.title, props.description]);
 
   return (
-    <Container {...props}>
+    <Container {...props} className="overflow-y-hidden">
       <HighchartsReact highcharts={Highcharts} options={options} />
     </Container>
   );

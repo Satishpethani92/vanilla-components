@@ -1,0 +1,68 @@
+cubes:
+  - name: capability_goal
+    title: Capabilities Goal Map
+    sql_alias: cap_goal
+    data_source: my-db
+    sql: >
+      WITH CapabilitiesCTE AS (
+      SELECT *
+      FROM csdb.capabilities
+      WHERE (
+        org_id = { COMPILE_CONTEXT.securityContext.org_id }
+        AND create_user_id = { COMPILE_CONTEXT.securityContext.usr_id }
+      ) OR cap_id IN (
+        SELECT ro.obj_id
+        FROM csdb.user_role_access ura
+        JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+        WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          AND ro.obj_type = 'CAPABILITIES'
+        )
+      )
+      SELECT 
+        c.cap_id AS n_id, 
+        c.name AS n_name, 
+        1 AS weight, 
+        NULL AS p_id
+      FROM CapabilitiesCTE c
+      LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
+      LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
+      WHERE g.gol_id IS NOT NULL
+      GROUP BY c.cap_id, c.name
+      UNION
+      SELECT 
+        g.gol_id AS n_id, 
+        g.goal_title AS n_name, 
+        1 AS weight, 
+        c.cap_id AS p_id
+      FROM CapabilitiesCTE c
+      LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
+      LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
+      WHERE g.gol_id IS NOT NULL
+
+    dimensions:
+      - name: n_id_disp
+        sql: concat(n_id,p_id) 
+        type: number
+        primary_key: true
+        title: 'Node ID'
+
+      - name: n_id
+        sql: n_id
+        type: number
+        title: 'Child Id'
+
+      - name: n_name
+        sql: n_name
+        type: string
+        title: 'Child Name'
+
+      - name: p_id
+        sql: p_id
+        type: number
+        title: 'Parent ID'
+
+    measures:
+      - name: weight
+        sql: weight
+        type: sum
+        title: 'value'
