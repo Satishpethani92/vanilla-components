@@ -67,7 +67,6 @@ export default function Speedometer(props: Props) {
       plotBackgroundImage: null,
       plotBorderWidth: 0,
       plotShadow: false,
-      height: '80%',
     },
 
     title: {

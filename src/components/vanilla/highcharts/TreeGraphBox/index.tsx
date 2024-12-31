@@ -52,7 +52,7 @@ function transformResultsToTreeGraphData(props: Props): TreeGraphPoint[] {
 }
 
 export default function TreeGraphBoxChart(props: Props) {
-  const chartData = useMemo(() => transformResultsToTreeGraphData(props), [props.results]);
+  const chartData = useMemo(() => transformResultsToTreeGraphData(props), [props]);
 
   const options = useMemo(() => {
     return {
