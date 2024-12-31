@@ -62,7 +62,6 @@ function transformResultsToSunburstData(props: Props): SunburstPoint[] {
 
 export default function SunburstChart(props: Props) {
   const chartData = useMemo(() => transformResultsToSunburstData(props), [props.results]);
-  console.log('SunburstChart chartData', chartData);
 
   const options = useMemo(() => {
     return {

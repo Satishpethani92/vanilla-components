@@ -95,15 +95,12 @@ export default defineComponent(Component, meta, {
       });
     }
 
-    console.log("defineComponent inputs-----",inputs);
     // Load the data from the configured dataset, pulling in only the relevant dimensions.
     const results = loadData({
       from: inputs.ds,
-      dimensions: [
-        inputs.idDimension,
-        inputs.parentDimension,
-        inputs.nameDimension,
-      ].filter(Boolean),
+      dimensions: [inputs.idDimension, inputs.parentDimension, inputs.nameDimension].filter(
+        Boolean,
+      ),
       measures: [inputs.valueDimension],
       orderBy: orderProp,
     });

@@ -41,7 +41,7 @@ function transformResultsToTreeGraphData(props: Props): TreeGraphPoint[] {
   if (!results?.data?.length) {
     return [];
   }
-  console.log('results', results.data);
+
   const data: TreeGraphPoint[] = results.data.map((row: any) => ({
     id: String(row[idDimension?.name] ?? ''),
     parent: String(row[parentDimension?.name] ?? ''),
