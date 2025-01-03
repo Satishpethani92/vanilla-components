@@ -22,7 +22,8 @@ cubes:
         c.cap_id AS n_id, 
         c.name AS n_name, 
         1 AS weight, 
-        NULL AS p_id
+        NULL AS p_id, 
+        case when CHAR_LENGTH(c.name)>6 then c.cap_id else c.name end as id_name
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
       LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
@@ -33,7 +34,8 @@ cubes:
         g.gol_id AS n_id, 
         g.goal_title AS n_name, 
         1 AS weight, 
-        c.cap_id AS p_id
+        c.cap_id AS p_id, 
+        case when CHAR_LENGTH(g.goal_title)>6 then g.gol_id else g.goal_title end as id_name
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
       LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
@@ -60,6 +62,11 @@ cubes:
         sql: p_id
         type: number
         title: 'Parent ID'
+
+      - name: id_name
+        sql: id_name
+        type: string
+        title: 'ID Name'
 
     measures:
       - name: weight

@@ -1,0 +1,89 @@
+cubes:
+  - name: capability_objective_project
+    title: Capabilities Objective Project
+    sql_alias: cap_obj_project
+    data_source: my-db
+    sql: >
+      WITH CapabilitiesCTE AS (
+      SELECT *
+      FROM csdb.capabilities
+      WHERE (
+          org_id = { COMPILE_CONTEXT.securityContext.org_id }
+          AND create_user_id = { COMPILE_CONTEXT.securityContext.usr_id }
+        ) OR cap_id IN (
+          SELECT ro.obj_id
+          FROM csdb.user_role_access ura
+          JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+          WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          AND ro.obj_type = 'CAPABILITIES'
+        )
+      )
+      SELECT 
+        c.cap_id AS n_id, 
+        c.name AS n_name,
+        o.otype As n_type,
+        1 AS weight, 
+        NULL AS p_id,
+        case when char_length(c.name)>6 then c.cap_id else c.name end as name_id,
+        c.name as tooltip
+      FROM CapabilitiesCTE c
+      LEFT JOIN csdb.objective_capabilities oc ON oc.cap_id = c.cap_id
+      LEFT JOIN csdb.objectives o ON o.obj_id = oc.obj_id
+      WHERE o.obj_id IS NOT NULL
+      GROUP BY c.cap_id, c.name,o.otype
+      UNION
+      SELECT 
+        o.obj_id AS n_id, 
+        o.obj_name AS n_name,
+        o.otype As n_type,
+        1 AS weight, 
+        c.cap_id AS p_id,
+        case when char_length(o.obj_name)>6 then o.obj_id else o.obj_name end as name_id,
+        case when o.otype = "objective"  then concat("O:" , o.obj_name) when o.otype = "strategic-initiative"  then concat("P:" , o.obj_name) else o.obj_name end as tooltip 
+      FROM CapabilitiesCTE c
+      LEFT JOIN csdb.objective_capabilities oc ON oc.cap_id = c.cap_id
+      LEFT JOIN csdb.objectives o ON o.obj_id = oc.obj_id
+      WHERE o.obj_id IS NOT NULL
+
+    dimensions:
+      - name: n_id_disp
+        sql: n_id
+        type: number
+        primary_key: true
+        title: 'Node ID'
+
+      - name: n_id
+        sql: n_id
+        type: number
+        title: 'Child Id'
+
+      - name: n_type
+        sql: n_type
+        type: string
+        title: 'Child Type'
+
+      - name: n_name
+        sql: n_name
+        type: string
+        title: 'Child Name'
+
+      - name: name_id
+        sql: name_id
+        type: string
+        title: 'Name Id'
+
+      - name: p_id
+        sql: p_id
+        type: number
+        title: 'Parent ID'
+
+      - name: tooltip_okr
+        sql: tooltip
+        type: string
+        title: 'Tooltip'
+
+    measures:
+      - name: weight
+        sql: weight
+        type: sum
+        title: 'value'
