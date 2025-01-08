@@ -1,0 +1,83 @@
+cubes:
+  - name: organization_project
+    sql_alias: org_pro
+    title: Organization Project
+    data_source: my-db
+    sql: >
+      WITH ProjectsCTE AS (
+      SELECT obj.*
+      FROM csdb.objectives obj
+      WHERE otype = 'strategic-initiative'
+        AND 
+        (
+          (
+            obj.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+            AND obj.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT ro.obj_id
+                FROM csdb.user_role_access ura
+                  JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                  WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                    AND ro.obj_type = 'PROJECT'
+          ) OR obj.obj_id IN (
+                SELECT obo.obj_id
+                  FROM csdb.objective_organization obo
+                  JOIN csdb.team_structure ts
+                    ON ts.ogs_id = obo.ogs_id
+                    WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT obt.obj_id
+                  FROM csdb.objective_team obt
+                  JOIN csdb.teams_users tu
+                    ON tu.tea_id = obt.tea_id
+                    WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          )
+        )
+      )
+
+      select og.*, case when oo.obj_id is null then 0 else 1 end as obj_assigned from
+      (select parent_org_id,obj_id, osa.org_id, ogs_name, osa.ogs_id,pj.obj_name from 
+      org_structure osa inner join ProjectsCTE pj on osa.org_id = pj.org_id )  og left join objective_organization oo 
+      on og.ogs_id = oo.ogs_id and og.obj_id = oo.obj_id
+      
+    dimensions:
+      - name: Parent_org_id
+        sql: Parent_org_id
+        type: number
+        title: 'Parent Organization ID'
+
+      - name: obj_id
+        sql: obj_id
+        type: number
+        primary_key: true
+        title: 'Project ID'
+
+      - name: obj_id_disp
+        sql: obj_id
+        type: number
+        title: 'Project ID'
+
+      - name: org_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Id'
+
+      - name: ogs_name
+        sql: ogs_name
+        type: string
+        title: 'Organization Structure Name'
+
+      - name: ogs_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Structure ID'
+
+      - name: obj_name
+        sql: obj_name
+        type: string
+        title: 'Project Name'
+
+      - name: obj_assigned
+        sql: obj_assigned
+        type: number
+        title: 'Project assigned'
