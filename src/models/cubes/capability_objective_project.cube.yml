@@ -21,10 +21,11 @@ cubes:
       SELECT 
         c.cap_id AS n_id, 
         c.name AS n_name,
+        c.cap_code as n_code,
         o.otype As n_type,
         1 AS weight, 
         NULL AS p_id,
-        case when char_length(c.name)>6 then c.cap_id else c.name end as name_id,
+        case when char_length(c.name)>6 then c.cap_code else c.name end as name_id,
         c.name as tooltip
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.objective_capabilities oc ON oc.cap_id = c.cap_id
@@ -35,10 +36,11 @@ cubes:
       SELECT 
         o.obj_id AS n_id, 
         o.obj_name AS n_name,
+        o.obj_code as n_code,
         o.otype As n_type,
         1 AS weight, 
         c.cap_id AS p_id,
-        case when char_length(o.obj_name)>6 then o.obj_id else o.obj_name end as name_id,
+        case when char_length(o.obj_name)>6 then o.obj_code else o.obj_name end as name_id,
         case when o.otype = "objective"  then concat("O:" , o.obj_name) when o.otype = "strategic-initiative"  then concat("P:" , o.obj_name) else o.obj_name end as tooltip 
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.objective_capabilities oc ON oc.cap_id = c.cap_id
@@ -81,6 +83,11 @@ cubes:
         sql: tooltip
         type: string
         title: 'Tooltip'
+
+      - name: n_code
+        sql: n_code
+        type: string
+        title: 'Child Code'
 
     measures:
       - name: weight

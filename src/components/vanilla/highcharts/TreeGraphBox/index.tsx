@@ -9,6 +9,7 @@ import exportingModule from 'highcharts/modules/exporting.js';
 import accessibilityModule from 'highcharts/modules/accessibility.js';
 
 import Container from '../../Container';
+import { COLORS } from '../../../constants';
 
 try {
   if (typeof Highcharts === 'object') {
@@ -25,6 +26,7 @@ interface TreeGraphPoint {
   id: string;
   parent: string;
   name: string;
+  tooltip: string;
 }
 
 interface Props {
@@ -34,26 +36,28 @@ interface Props {
   idDimension?: any;
   parentDimension?: any;
   nameDimension?: any;
+  tooltipDimension?: any;
 }
 
 function transformResultsToTreeGraphData(props: Props): TreeGraphPoint[] {
-  const { results, idDimension, parentDimension, nameDimension } = props;
+  const { results, idDimension, parentDimension, nameDimension, tooltipDimension } = props;
   if (!results?.data?.length) {
     return [];
   }
-  console.log('results', results.data);
+    
   const data: TreeGraphPoint[] = results.data.map((row: any) => ({
     id: String(row[idDimension?.name] ?? ''),
     parent: String(row[parentDimension?.name] ?? ''),
     name: String(row[nameDimension?.name] ?? ''),
+    tooltip: String(row[tooltipDimension?.name] ?? ''),
   }));
-
+  
   return data;
 }
 
 export default function TreeGraphBoxChart(props: Props) {
-  const chartData = useMemo(() => transformResultsToTreeGraphData(props), [props.results]);
-
+  const chartData = useMemo(() => transformResultsToTreeGraphData(props), [props.results, props.tooltipDimension]);
+  console.log("treegraph chartData", chartData)
   const options = useMemo(() => {
     return {
       chart: {
@@ -61,21 +65,16 @@ export default function TreeGraphBoxChart(props: Props) {
         height: '100%',
       },
       title: {
-        text: props.title || 'Treegraph with box layout',
+        text: null,
       },
-      subtitle: {
-        text: props.description || '',
-      },
+      colors: COLORS,
       series: [
         {
           type: 'treegraph',
           data: chartData,
-          tooltip: {
-            pointFormat: '{point.name}',
-          },
           marker: {
             symbol: 'rect',
-            width: '25%',
+            width: '15%',
           },
           borderRadius: 10,
           dataLabels: {
@@ -90,31 +89,91 @@ export default function TreeGraphBoxChart(props: Props) {
             {
               level: 1,
               levelIsConstant: false,
+              colorByPoint: true,
             },
+            // {
+            //   level: 2,
+            //   // colorByPoint: true,
+            // },
             {
               level: 2,
-              colorByPoint: true,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.15,
+              },
             },
             {
               level: 3,
               colorVariation: {
                 key: 'brightness',
-                to: -0.5,
+                to: 0.25,
               },
             },
             {
               level: 4,
               colorVariation: {
                 key: 'brightness',
-                to: 0.5,
+                to: 0.25,
+              },
+            },
+            {
+              level: 5,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 6,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 7,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 8,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 9,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 10,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
+              },
+            },
+            {
+              level: 11,
+              colorVariation: {
+                key: 'brightness',
+                to: 0.25,
               },
             },
           ],
         },
       ],
-
+      tooltip: {
+        headerFormat: '',
+        pointFormat: '{point.tooltip}',
+      },
       exporting: {
-        enabled: true,
+        enabled: false,
       },
       accessibility: {
         enabled: true,
@@ -123,7 +182,7 @@ export default function TreeGraphBoxChart(props: Props) {
   }, [chartData, props.title, props.description]);
 
   return (
-    <Container {...props}>
+    <Container {...props} className="overflow-y-hidden">
       <HighchartsReact highcharts={Highcharts} options={options} />
     </Container>
   );

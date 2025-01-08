@@ -20,10 +20,11 @@ cubes:
       )
       SELECT 
         c.cap_id AS n_id, 
-        c.name AS n_name, 
+        c.name AS n_name,
+        c.cap_code as n_code, 
         1 AS weight, 
         NULL AS p_id, 
-        case when CHAR_LENGTH(c.name)>6 then c.cap_id else c.name end as id_name
+        case when CHAR_LENGTH(c.name)>6 then c.cap_code else c.name end as id_name
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
       LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
@@ -32,10 +33,11 @@ cubes:
       UNION
       SELECT 
         g.gol_id AS n_id, 
-        g.goal_title AS n_name, 
+        g.goal_title AS n_name,
+        g.gl_code as n_code, 
         1 AS weight, 
         c.cap_id AS p_id, 
-        case when CHAR_LENGTH(g.goal_title)>6 then g.gol_id else g.goal_title end as id_name
+        case when CHAR_LENGTH(g.goal_title)>6 then g.gl_code else g.goal_title end as id_name
       FROM CapabilitiesCTE c
       LEFT JOIN csdb.goal_capabilities gc ON gc.cap_id = c.cap_id
       LEFT JOIN csdb.goals g ON g.gol_id = gc.gol_id
@@ -62,6 +64,11 @@ cubes:
         sql: p_id
         type: number
         title: 'Parent ID'
+
+      - name: n_code
+        sql: n_code
+        type: string
+        title: 'Child Code'
 
       - name: id_name
         sql: id_name

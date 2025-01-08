@@ -8,7 +8,7 @@ import exportingModule from 'highcharts/modules/exporting.js';
 import accessibilityModule from 'highcharts/modules/accessibility.js';
 
 import Container from '../../Container';
-
+import { COLORS } from '../../../constants';
 // Initialize the required Highcharts modules
 try {
   if (typeof Highcharts === 'object') {
@@ -25,6 +25,7 @@ interface SunburstPoint {
   id: string;
   parent: string;
   name: string;
+  tooltip: string;
   value?: number | null;
 }
 
@@ -36,6 +37,7 @@ interface Props {
   parentDimension?: any;
   nameDimension?: any;
   valueDimension?: any;
+  tooltipDimension?: any;
 }
 
 /**
@@ -47,97 +49,110 @@ interface Props {
  * - `value` is optional but commonly used for numeric data
  */
 function transformResultsToSunburstData(props: Props): SunburstPoint[] {
-  const { results, idDimension, parentDimension, nameDimension, valueDimension } = props;
+  const { results, idDimension, parentDimension, nameDimension, valueDimension, tooltipDimension } = props;
   if (!results?.data?.length) {
     return [];
   }
 
   return results.data.map((row: any) => ({
     id: String(row[idDimension?.name] ?? ''),
-    parent: String(row[parentDimension?.name] ?? ''),
     name: String(row[nameDimension?.name] ?? ''),
+    parent: String(row[parentDimension?.name] ?? ''),
+    tooltip: String(row[tooltipDimension?.name] ?? ''),
     value: valueDimension?.name ? Number(row[valueDimension?.name] ?? 0) : null,
   }));
 }
 
 export default function SunburstChart(props: Props) {
-  const chartData = useMemo(() => transformResultsToSunburstData(props), [props.results]);
+  // const chartData = useMemo(() => transformResultsToSunburstData(props), [props.results]);
+  const chartData = useMemo(() => {
+    try {
+      return transformResultsToSunburstData(props);
+    } catch (err) {
+      console.error('Error transforming results:', err);
+      return [];
+    }
+  }, [props.results, props.idDimension, props.parentDimension, props.nameDimension, props.valueDimension, props.tooltipDimension]);
+
   console.log('SunburstChart chartData', chartData);
 
   const options = useMemo(() => {
-    return {
-      chart: {
-        height: '100%',
-        width: '100%',
-      },
-      title: {
-        text: props.title || 'Sunburst Chart Example',
-      },
-      subtitle: {
-        text: props.description || '',
-      },
-      series: [
-        {
-          type: 'sunburst',
-          data: chartData,
-          allowDrillToNode: true,
-          cursor: 'pointer',
-          name: 'Root',
-          borderRadius: 3,
-          dataLabels: {
-            format: '{point.name}',
-            filter: {
-              property: 'innerArcLength',
-              operator: '>',
-              value: 4,
+    try {
+      return {
+        chart: {
+          height: '100%',
+        },
+        title: {
+          text: null,
+        },
+        responsive: true,
+        colors: COLORS,
+        series: [
+          {
+            type: 'sunburst',
+            data: [...chartData],
+            allowDrillToNode: true,
+            cursor: 'pointer',
+            name: 'Root',
+            borderRadius: 3,
+            dataLabels: {
+              format: '{point.name}',
+              filter: {
+                property: 'innerArcLength',
+                operator: '>',
+                value: 4,
+              },
             },
-          },
-          levels: [
-            {
-              level: 1,
-              levelIsConstant: false,
-              dataLabels: {
-                filter: {
-                  property: 'outerArcLength',
-                  operator: '>',
-                  value: 4,
+            levels: [
+              {
+                level: 1,
+                colorByPoint: true,
+                levelIsConstant: false,
+                dataLabels: {
+                  filter: {
+                    property: 'outerArcLength',
+                    operator: '>',
+                    value: 4,
+                  },
                 },
               },
-            },
-            {
-              level: 2,
-              colorByPoint: true,
-            },
-            {
-              level: 3,
-              colorVariation: {
-                key: 'brightness',
-                to: -0.5,
+              // {
+              //   level: 2,
+              //   // colorByPoint: true,
+              // },
+              {
+                level: 2,
+                colorVariation: {
+                  key: 'brightness',
+                  to: -0.5,
+                },
               },
-            },
-            {
-              level: 4,
-              colorVariation: {
-                key: 'brightness',
-                to: 0.5,
+              {
+                level: 3,
+                colorVariation: {
+                  key: 'brightness',
+                  to: 0.5,
+                },
               },
-            },
-          ],
+            ],
+          },
+        ],
+        tooltip: {
+          headerFormat: '',
+          pointFormat: '{point.tooltip}',
         },
-      ],
-      tooltip: {
-        headerFormat: '',
-        // Example: "The population of <b>{point.name}</b> is <b>{point.value}</b>"
-        pointFormat: 'The value of <b>{point.name}</b> is <b>{point.value}</b>',
-      },
-      exporting: {
-        enabled: true,
-      },
-      accessibility: {
-        enabled: true,
-      },
-    };
-  }, [chartData, props.title, props.description]);
+        exporting: {
+          enabled: false,
+        },
+        accessibility: {
+          enabled: true,
+        },
+      };
+    } catch (err) {
+      console.error('Error creating chart options:', err);
+      return {};
+    }
+  }, [chartData]);
 
   return (
     <Container {...props} className="overflow-y-hidden">

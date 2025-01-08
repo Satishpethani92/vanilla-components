@@ -1,12 +1,14 @@
-import { OrderBy, loadData } from '@embeddable.com/core';
+import { Value, loadData } from '@embeddable.com/core';
 import { EmbeddedComponentMeta, Inputs, defineComponent } from '@embeddable.com/react';
+
 import Component from './index';
 
 export const meta = {
-  name: 'TreeGraphBox',
-  label: 'Tree Graph Box (Highcharts)',
-  category: 'HighCharts',
+  name: 'BulletChart',
+  label: 'Bullet chart',
   classNames: ['inside-card'],
+  category: 'HighCharts',
+
   inputs: [
     {
       name: 'ds',
@@ -15,40 +17,18 @@ export const meta = {
       category: 'Chart data',
     },
     {
-      name: 'idDimension',
+      name: 'slice',
       type: 'dimension',
-      label: 'ID (Node)',
-      description: 'Each row should have a unique ID for the node.',
+      label: 'Dimension (X-axis)',
       config: {
         dataset: 'ds',
       },
       category: 'Chart data',
     },
     {
-      name: 'parentDimension',
-      type: 'dimension',
-      label: 'Parent ID',
-      description: 'Specify the parent ID for each node. (Empty for root)',
-      config: {
-        dataset: 'ds',
-      },
-      category: 'Chart data',
-    },
-    {
-      name: 'nameDimension',
-      type: 'dimension',
-      label: 'Display Name',
-      description: 'The display name of the node in the TreeGraph.',
-      config: {
-        dataset: 'ds',
-      },
-      category: 'Chart data',
-    },
-    {
-      name: 'tooltipDimension',
-      type: 'dimension',
-      label: 'Tooltip',
-      description: 'The tooltip of the node in the Sunburst chart.',
+      name: 'metric',
+      type: 'measure',
+      label: 'Measure (Y-axis)',
       config: {
         dataset: 'ds',
       },
@@ -58,12 +38,21 @@ export const meta = {
       name: 'title',
       type: 'string',
       label: 'Chart Title',
+      defaultValue: 'My Bullet Chart',
       category: 'Chart settings',
     },
     {
       name: 'description',
       type: 'string',
       label: 'Description',
+      defaultValue: 'Demonstrating a basic Highcharts Bullet Chart.',
+      category: 'Chart settings',
+    },
+    {
+      name: 'showLegend',
+      type: 'boolean',
+      label: 'Show Legend',
+      defaultValue: true,
       category: 'Chart settings',
     },
     {
@@ -81,31 +70,48 @@ export const meta = {
       defaultValue: true,
     },
   ],
+
+  events: [
+    {
+      name: 'onClick',
+      label: 'Click',
+      properties: [
+        {
+          name: 'dimensionValue',
+          type: 'string',
+        },
+        {
+          name: 'measureValue',
+          type: 'number',
+        },
+      ],
+    },
+  ],
 } as const satisfies EmbeddedComponentMeta;
 
 export default defineComponent(Component, meta, {
   props: (inputs: Inputs<typeof meta>) => {
-    const orderProp: OrderBy[] = [];
-
-    if (inputs.idDimension) {
-      orderProp.push({
-        property: inputs.idDimension,
-        direction: 'asc',
-      });
-    }
-
-    const results = loadData({
+    console.log({
       from: inputs.ds,
-      dimensions: [inputs.idDimension, inputs.parentDimension, inputs.nameDimension,
-        inputs.tooltipDimension].filter(
-        (e) => e,
-      ),
-      measures: [],
+      dimensions: [inputs.slice],
+      measures: [inputs.metric],
     });
-
     return {
       ...inputs,
-      results,
+      results: loadData({
+        from: inputs.ds,
+        dimensions: [inputs.slice],
+        measures: [inputs.metric],
+      }),
     };
+  },
+
+  events: {
+    onClick: (dataPoint) => {
+      return {
+        dimensionValue: dataPoint?.dimensionValue || Value.noFilter(),
+        measureValue: dataPoint?.measureValue || Value.noFilter(),
+      };
+    },
   },
 });

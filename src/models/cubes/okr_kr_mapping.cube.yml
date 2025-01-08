@@ -1,0 +1,104 @@
+cubes:
+  - name: okr_kr_mapping
+    title: OKR_KR
+    sql_alias: okr_kr
+    data_source: my-db
+    sql: >
+      WITH ObjectivesCTE AS (
+      SELECT obj.* 
+      FROM csdb.objectives obj
+      WHERE obj.otype = 'objective'
+        AND 
+        (
+          (
+            obj.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+            AND obj.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT ro.obj_id
+                FROM csdb.user_role_access ura
+                  JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                  WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                    AND ro.obj_type = 'OKR'
+          ) OR obj.obj_id IN (
+                SELECT obo.obj_id
+                  FROM csdb.objective_organization obo
+                  JOIN csdb.team_structure ts
+                    ON ts.ogs_id = obo.ogs_id
+                    WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT obt.obj_id
+                  FROM csdb.objective_team obt
+                  JOIN csdb.teams_users tu
+                    ON tu.tea_id = obt.tea_id
+                    WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          )
+        )
+      )
+      select 
+        o.obj_id as n_id,
+        o.obj_name as n_name,
+        o.otype as n_type,
+        1 as weight,
+        Null as p_id,
+        case when char_length(o.obj_name)>6 then o.obj_code else o.obj_name end as name_id,
+        o.obj_name as tooltip
+        from ObjectivesCTE as o left join key_results as kr on o.obj_id=kr.obj_id
+            where kr.krs_id is not null and o.otype="objective"
+            group by o.obj_id,o.obj_name,o.otype
+        Union
+        select 
+          kr.krs_id as n_id,
+          kr.krs_name as n_name,
+          kr.krs_type as n_type,
+          1 as weight,
+          o.obj_id as p_id,
+          kr.krs_name as name_id,
+          case when kr.krs_type="task" then concat("T",".",kr.krs_name)
+            when kr.krs_type="kpi" then concat("K",".",kr.krs_name)
+            when kr.krs_type="milestone" then concat("M",".",kr.krs_name)
+          End as tooltip
+          from ObjectivesCTE as o left join key_results as kr on o.obj_id=kr.obj_id
+          where kr.krs_id is not null and o.otype="objective"
+
+    dimensions:
+      - name: n_id_disp
+        sql: n_id
+        type: number
+        primary_key: true
+        title: 'Node ID'
+
+      - name: n_id
+        sql: n_id
+        type: number
+        title: 'Child Id'
+
+      - name: n_name
+        sql: n_name
+        type: string
+        title: 'Child Name'
+	
+      - name: name_id
+        sql: name_id
+        type: string
+        title: 'Name Id'
+
+      - name: n_type
+        sql: n_type
+        type: string
+        title: 'Child Type'
+
+      - name: p_id
+        sql: p_id
+        type: number
+        title: 'Parent ID'
+
+      - name: tooltip
+        sql: tooltip
+        type: string
+        title: 'Tooltip'
+
+    measures:
+      - name: weight
+        sql: weight
+        type: sum
+        title: 'value'

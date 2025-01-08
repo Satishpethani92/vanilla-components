@@ -15,18 +15,18 @@ export const LARGE_FONT_SIZE = '32px';
 
 
 export const COLORS = [
-'#6778DE',
-'#FF997C',
-'#9EA4F4',
-'#B8B8D1',
-'#FF6B6C',
-'#FFC145',
-'#9DC7FF',
-'#FF805B',
-'#CD9FFF',
-'#E6DEDE',
-'#FFA6A6',
-'#FFD98D',
+  '#5381FF',
+  '#F1921D',
+  '#FFBE15',
+  '#8D4FEB',
+  '#00C7BC',
+  '#919191',
+  '#6BA6FF',
+  '#FFA646',
+  '#FFCC47',
+  '#B06DFF',
+  '#3CE4DB',
+  '#B8B8B8'
 ]
 
 export const DATE_DISPLAY_FORMATS = {

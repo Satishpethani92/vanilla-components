@@ -316,6 +316,11 @@ cubes:
         type: count
         title: '# of Goals'
 
+      - name: pct_actual
+        sql: actual_score/expected_score*100
+        type: number
+        title: 'Goal %'
+
     joins:
       - name: okr
         sql: '{CUBE}.gol_id = {okr}.gol_id'

@@ -55,6 +55,16 @@ export const meta = {
       category: 'Chart data',
     },
     {
+      name: 'tooltipDimension',
+      type: 'dimension',
+      label: 'Tooltip',
+      description: 'The tooltip of the node in the Sunburst chart.',
+      config: {
+        dataset: 'ds',
+      },
+      category: 'Chart data',
+    },
+    {
       name: 'title',
       type: 'string',
       label: 'Chart Title',
@@ -103,6 +113,7 @@ export default defineComponent(Component, meta, {
         inputs.idDimension,
         inputs.parentDimension,
         inputs.nameDimension,
+        inputs.tooltipDimension,
       ].filter(Boolean),
       measures: [inputs.valueDimension],
       orderBy: orderProp,

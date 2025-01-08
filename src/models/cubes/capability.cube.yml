@@ -4,7 +4,7 @@ cubes:
     sql_alias: cap
     data_source: my-db
     sql: >
-      SELECT *
+      SELECT * 
       FROM csdb.capabilities
       WHERE (
         org_id = { COMPILE_CONTEXT.securityContext.org_id }
@@ -28,6 +28,16 @@ cubes:
         sql: cap_id
         type: number
         title: 'Display Capability ID'
+
+      - name: cap_id_name
+        sql: (Select concat(c.cap_code, "-" ,c.name, "-", IFNULL((SELECT name FROM csdb.org_master_table WHERE omt_id = {CUBE}.interest_level),"NA")) FROM csdb.capabilities as c WHERE c.cap_id = {CUBE}.cap_id)
+        type: string
+        title: 'Capability ID Name'
+
+      - name: cap_id_or_name
+        sql: (Select case when char_length(c.name) > 6 then c.cap_code else c.name end FROM csdb.capabilities as c WHERE c.cap_id = {CUBE}.cap_id)
+        type: string
+        title: 'Capability ID or Name'
 
       - name: org_id
         sql: org_id

@@ -1,0 +1,71 @@
+cubes:
+  - name: capability_organization
+    title: Capabilities Organization
+    sql_alias: cap_org
+    data_source: my-db
+    sql: >
+      WITH CapabilitiesCTE AS (
+      SELECT *
+      FROM csdb.capabilities
+      WHERE (
+          org_id = { COMPILE_CONTEXT.securityContext.org_id }
+          AND create_user_id = { COMPILE_CONTEXT.securityContext.usr_id }
+        ) OR cap_id IN (
+          SELECT ro.obj_id
+          FROM csdb.user_role_access ura
+          JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+          WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          AND ro.obj_type = 'CAPABILITIES'
+        )
+      )
+      select og.*, case when co.cap_id is null then 0 else 1 end as cap_assigned from
+      (select parent_org_id,cap_id, osa.org_id, ogs_name, osa.ogs_id,cap.name from 
+      org_structure osa inner join CapabilitiesCTE cap on osa.org_id = cap.org_id) og left join capability_organization co 
+      on og.ogs_id = co.ogs_id and og.cap_id = co.cap_id
+            
+    dimensions:
+      - name: Parent_org_id
+        sql: Parent_org_id
+        type: number
+        title: 'Parent Organization ID'
+
+      - name: cap_id
+        sql: cap_id
+        type: number
+        primary_key: true
+        title: 'Capability ID'
+
+      - name: cap_id_disp
+        sql: cap_id
+        type: number
+        title: 'Capability ID Display'
+
+      - name: org_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Id'
+
+      - name: ogs_name
+        sql: ogs_name
+        type: string
+        title: 'Organization Structure Name'
+
+      - name: ogs_id
+        sql: ogs_id
+        type: number
+        title: 'Organization Structure ID'
+
+      - name: name
+        sql: name
+        type: string
+        title: 'Capability Name'
+
+      - name: cap_assigned
+        sql: cap_assigned
+        type: number
+        title: 'Capability assigned'
+
+    measures:
+      - name: count
+        type: count
+        title: '# of Capabilities'
