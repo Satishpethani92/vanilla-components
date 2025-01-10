@@ -1,0 +1,101 @@
+cubes:
+  - name: project_goal_milestone
+    sql_alias: pro_goal_milestone
+    title: Projects Goals Milestones 
+    data_source: my-db
+    sql: >
+      WITH ProjectsCTE AS (
+      SELECT obj.*
+      FROM csdb.objectives obj
+      WHERE otype = 'strategic-initiative'
+        AND 
+        (
+          (
+            obj.org_id = { COMPILE_CONTEXT.securityContext.org_id }
+            AND obj.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT ro.obj_id
+                FROM csdb.user_role_access ura
+                  JOIN csdb.role_object ro ON ura.rbj_id = ro.rbj_id
+                  WHERE ura.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+                    AND ro.obj_type = 'PROJECT'
+          ) OR obj.obj_id IN (
+                SELECT obo.obj_id
+                  FROM csdb.objective_organization obo
+                  JOIN csdb.team_structure ts
+                    ON ts.ogs_id = obo.ogs_id
+                    WHERE ts.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          ) OR obj.obj_id IN (
+                SELECT obt.obj_id
+                  FROM csdb.objective_team obt
+                  JOIN csdb.teams_users tu
+                    ON tu.tea_id = obt.tea_id
+                    WHERE tu.usr_id = { COMPILE_CONTEXT.securityContext.usr_id }
+          )
+        )
+      )
+      select o.obj_id as n_id,
+      o.obj_name as n_name,
+      o.obj_code as n_code,
+      null as p_id,
+      null as p_name,
+      1 as weight
+      from ProjectsCTE o 
+      left join goals g on o.gol_id=g.gol_id
+      left join objective_tasks om on o.obj_id=om.obj_id
+      where  o.obj_id is not null
+      group by o.obj_id,o.obj_name
+      UNION
+      select g.gol_id as n_id,
+      g.goal_title as n_name,
+      g.gl_code as n_code,
+      o.obj_id as p_id,
+      o.obj_name as p_name,
+      1 as weight
+      from ProjectsCTE o 
+      left join goals g on o.gol_id=g.gol_id
+      left join objective_tasks om on o.obj_id=om.obj_id
+      where o.obj_id is not null
+      UNION
+      select om.obt_id as n_id,
+      om.task_name as n_name,
+      null as n_code,
+      o.obj_id as p_id,
+      o.obj_name as p_name,
+      1 as weight
+      from ProjectsCTE o 
+      left join goals g on o.gol_id=g.gol_id
+      left join objective_tasks om on o.obj_id=om.obj_id
+      where o.obj_id is not null and om.obt_id is not null
+    
+    dimensions:
+      - name: n_id_disp
+        sql: n_id
+        type: number
+        primary_key: true
+        title: 'Node ID'
+
+      - name: n_id
+        sql: n_id
+        type: number
+        title: 'Child Id'
+
+      - name: n_name
+        sql: n_name
+        type: string
+        title: 'Child name'
+
+      - name: n_code
+        sql: n_code
+        type: string
+        title: 'Child code'
+
+      - name: p_id
+        sql: p_id
+        type: number
+        title: 'Parent ID'
+        
+      - name: p_name
+        sql: p_name
+        type: string
+        title: 'Parent Name'

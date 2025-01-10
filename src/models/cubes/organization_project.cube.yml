@@ -35,10 +35,12 @@ cubes:
         )
       )
 
-      select og.*, case when oo.obj_id is null then 0 else 1 end as obj_assigned from
-      (select parent_org_id,obj_id, osa.org_id, ogs_name, osa.ogs_id,pj.obj_name from 
-      org_structure osa inner join ProjectsCTE pj on osa.org_id = pj.org_id )  og left join objective_organization oo 
+      select og.*, max(case when oo.obj_id is null then "False" else "True" end) as obj_assigned
+      from
+      (select parent_org_id,concat(parent_org_id,"-",obj_id) as parent_org_obj_id,obj_id,obj_code,osa.org_id, ogs_name,osa.ogs_id,concat(osa.ogs_id,"-",obj_id) as ogs_obj_id, pj.obj_name,case when char_length(ogs_name)>6 then ogs_code else ogs_name end as name_id from 
+      org_structure osa inner join ProjectsCTE pj on osa.org_id = pj.org_id ) og left join objective_organization oo 
       on og.ogs_id = oo.ogs_id and og.obj_id = oo.obj_id
+      group by 1,2,3,4,5,6
       
     dimensions:
       - name: Parent_org_id
@@ -58,7 +60,7 @@ cubes:
         title: 'Project ID'
 
       - name: org_id
-        sql: ogs_id
+        sql: org_id
         type: number
         title: 'Organization Id'
 
@@ -81,3 +83,18 @@ cubes:
         sql: obj_assigned
         type: number
         title: 'Project assigned'
+
+      - name: name_id
+        sql: name_id
+        type: string
+        title: 'Organization Name Id'
+
+      - name: parent_org_cap_id
+        sql: parent_org_cap_id
+        type: number
+        title: 'Parent organization Project Id'
+
+      - name: ogs_cap_id
+        sql: ogs_cap_id
+        type: number
+        title: 'Organization Project Id'

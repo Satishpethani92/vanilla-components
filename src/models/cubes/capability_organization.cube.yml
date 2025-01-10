@@ -18,10 +18,12 @@ cubes:
           AND ro.obj_type = 'CAPABILITIES'
         )
       )
-      select og.*, case when co.cap_id is null then 0 else 1 end as cap_assigned from
-      (select parent_org_id,cap_id, osa.org_id, ogs_name, osa.ogs_id,cap.name from 
+      select og.*, max(case when co.cap_id is null then "False" else "True" end) as cap_assigned, max(case when co.cap_id is null then 0 else 1 end) as count_cap_assigned from
+      (select parent_org_id,concat(parent_org_id,"-",cap_id) as parent_org_cap_id,cap_id,cap_code, osa.org_id, ogs_name, osa.ogs_id,concat(osa.ogs_id,"-",cap_id) as ogs_cap_id,cap.name,case when char_length(ogs_name)>6 then ogs_code else ogs_name end as name_id
+      from 
       org_structure osa inner join CapabilitiesCTE cap on osa.org_id = cap.org_id) og left join capability_organization co 
-      on og.ogs_id = co.ogs_id and og.cap_id = co.cap_id
+      on og.ogs_id = co.ogs_id and og.cap_id = co.cap_id 
+      group by 1,2,3,4,5,6
             
     dimensions:
       - name: Parent_org_id
@@ -62,10 +64,35 @@ cubes:
 
       - name: cap_assigned
         sql: cap_assigned
-        type: number
+        type: boolean
         title: 'Capability assigned'
+
+      - name: cap_code
+        sql: cap_code
+        type: string
+        title: 'Capability code'
+
+      - name: name_id
+        sql: name_id
+        type: string
+        title: 'Organization Name Id'
+      
+      - name: parent_org_cap_id
+        sql: parent_org_cap_id
+        type: number
+        title: 'Parent organization Capability Id'
+
+      - name: ogs_cap_id
+        sql: ogs_cap_id
+        type: number
+        title: 'Organization Capability Id'
 
     measures:
       - name: count
         type: count
         title: '# of Capabilities'
+      
+      - name: sum
+        type: sum
+        sql: count_cap_assigned
+        title: '# of Assigned Capabilities'
