@@ -1,10 +1,10 @@
 cubes:
   - name: project_goal_milestone
     sql_alias: pro_goal_milestone
-    title: Projects Goals Milestones 
+    title: Goals Projects Milestones 
     data_source: my-db
     sql: >
-      WITH ProjectsCTE AS (
+      with ProjectCTE as (
       SELECT obj.*
       FROM csdb.objectives obj
       WHERE otype = 'strategic-initiative'
@@ -34,40 +34,45 @@ cubes:
           )
         )
       )
-      select o.obj_id as n_id,
-      o.obj_name as n_name,
-      o.obj_code as n_code,
-      null as p_id,
-      null as p_name,
+      select o.obj_id as n_id, o.obj_name as n_name,
+      o.obj_code as n_code,  o.org_id,
+      g.gol_id as p_id,    g.goal_title as p_name,
+      o.obj_id as obj_filter_id, o.obj_name as obj_filter_name,
       1 as weight
-      from ProjectsCTE o 
+      from ProjectCTE o 
       left join goals g on o.gol_id=g.gol_id
       left join objective_tasks om on o.obj_id=om.obj_id
-      where  o.obj_id is not null
+      where  o.obj_id is not null 
       group by o.obj_id,o.obj_name
       UNION
       select g.gol_id as n_id,
       g.goal_title as n_name,
       g.gl_code as n_code,
-      o.obj_id as p_id,
-      o.obj_name as p_name,
+      o.org_id,
+      null as p_id,
+      null as p_name,
+      o.obj_id as obj_filter_id, o.obj_name as obj_filter_name,
       1 as weight
-      from ProjectsCTE o 
+      from ProjectCTE o 
       left join goals g on o.gol_id=g.gol_id
       left join objective_tasks om on o.obj_id=om.obj_id
       where o.obj_id is not null
+
       UNION
+
       select om.obt_id as n_id,
       om.task_name as n_name,
       null as n_code,
+      o.org_id,
       o.obj_id as p_id,
       o.obj_name as p_name,
+      o.obj_id as obj_filter_id, o.obj_name as obj_filter_name,
       1 as weight
-      from ProjectsCTE o 
+      from ProjectCTE o 
       left join goals g on o.gol_id=g.gol_id
       left join objective_tasks om on o.obj_id=om.obj_id
       where o.obj_id is not null and om.obt_id is not null
-    
+
     dimensions:
       - name: n_id_disp
         sql: n_id
@@ -99,3 +104,13 @@ cubes:
         sql: p_name
         type: string
         title: 'Parent Name'
+
+      - name: obj_filter_name
+        sql: obj_filter_name
+        type: string
+        title: 'Obj Filter Name' 
+
+      - name: obj_filter_id
+        sql: obj_filter_id
+        type: string
+        title: 'Obj Filter Id' 
